@@ -132,12 +132,9 @@ doge_get_data <- function(verbose=TRUE,
 #' @param return 
 #' 
 #' @importFrom scales dollar
-<<<<<<< HEAD
-=======
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarize
 #' @importFrom dplyr group_by
->>>>>>> 2ea184d (fix on @import)
 #'
 #' @returns A printed data.frame.
 #' @examples
