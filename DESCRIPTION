@@ -1,6 +1,6 @@
 Package: govScrapeR
 Title: GovScrapeR
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("Bob", "Stevenson", , "thebobstevenson@protonmail.com", role = c("aut", "cre"))
 Description: A basic R package to scrape and return data from government websites in table format.
