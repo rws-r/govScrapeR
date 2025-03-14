@@ -1,6 +1,6 @@
 Package: govScrapeR
 Title: GovScrapeR
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Author: RStevenson
 Maintainer: RStevenson <thebobstevenson@protonmail.com>
 Description: A basic R package to scrape and return data from government websites in table format.
