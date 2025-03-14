@@ -130,6 +130,8 @@ doge_get_data <- function(verbose=TRUE,
 #'
 #' @param data 
 #' @param return 
+#' 
+#' @importFrom scales dollar
 #'
 #' @returns A printed data.frame.
 #' @examples
