@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^R/defunct\.R$
 ^R/sandbox\.R$
+^LICENSE\.md$

@@ -1,11 +1,10 @@
 Package: govScrapeR
 Title: GovScrapeR
 Version: 0.0.0.9001
-Authors@R: 
-    person("Bob", "Stevenson", , "thebobstevenson@protonmail.com", role = c("aut", "cre"))
+Author: RStevenson
+Maintainer: RStevenson <thebobstevenson@protonmail.com>
 Description: A basic R package to scrape and return data from government websites in table format.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
