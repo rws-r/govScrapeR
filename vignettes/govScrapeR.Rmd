@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(govScrapeR)
+#library(govScrapeR)
 ```
 I built govScrapeR as a simple set of scripts to grab constantly changing government data, and present it a workable format for data analysis. It began as a desire to capture and categorize White House press releases and executive orders—as they were coming fast and furious immediately after the 2025 term began. I decided to make it public after DOGE released their website on savings, and questions about their own transparency began to emerge. 
 
