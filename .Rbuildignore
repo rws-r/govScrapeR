@@ -3,3 +3,7 @@
 ^R/defunct\.R$
 ^R/sandbox\.R$
 ^LICENSE\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
