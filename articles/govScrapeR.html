@@ -31,6 +31,12 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/govScrapeR.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/DOGE.html">DOGE Functionality</a></li>
+  </ul>
+</li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -69,7 +75,7 @@ DOGE released their website on savings, and questions about their own
 transparency began to emerge.</p>
 <p>Currently, govScrapeR offers two primary functions. The most recent,
 and useful is related to doge.gov/savings. Because doge.gov has
-published their findings oneline, but not as a dataset, govScrapeR
+published their findings online, but not as a dataset, govScrapeR
 scrapes the dynamically-created web data and returns it in table form.
 DOGE pulls their data from fpds.gov, so I have also included
 functionality that queries the ATOM feed at fpds.gov based on the PIID
@@ -79,6 +85,9 @@ fact-checking.</p>
 desired, it also integrates with OpenAI to summarize and categorize
 posts from the website. I am including this, but it’s still in somewhat
 rough shape.</p>
+<p>This project is intended to be open, and to foster greater
+transparency of government actions. Feel free to fork, expand, port, or
+suggest improvements</p>
   </main>
 </div>
 
