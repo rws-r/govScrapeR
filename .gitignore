@@ -51,3 +51,4 @@ data/
 R/defunct.R
 R/sandbox.R
 .DS_Store
+inst/doc
