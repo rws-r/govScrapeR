@@ -48,3 +48,5 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 data/
+R/defunct.R
+R/sandbox.R
