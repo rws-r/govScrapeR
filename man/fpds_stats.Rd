@@ -22,5 +22,7 @@ downloaded. Particularly useful for determining if nrow() was achieved as
 intended, and to compare to data captured by doge scraper.
 }
 \examples{
-fpds_stats(t,returnSummary=T,returnUniquePIIDS=F)
+\dontrun{
+pds_stats(t,returnSummary=T,returnUniquePIIDS=F)
+}
 }

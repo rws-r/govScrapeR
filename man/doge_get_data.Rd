@@ -4,10 +4,12 @@
 \alias{doge_get_data}
 \title{DOGE Get Data}
 \usage{
-doge_get_data(verbose = TRUE)
+doge_get_data(verbose = TRUE, saveFile = FALSE)
 }
 \arguments{
-\item{verbose}{}
+\item{verbose}{Logical, whether to produce messages}
+
+\item{saveFile}{Logical, whether to save file}
 }
 \value{
 A named list comprised of dataframes.
@@ -17,6 +19,7 @@ A fairly straightforward scraper that pulls data from dynamically-created
 scripts (javascript), cleans, and processes in table form.
 }
 \examples{
-get_doge_data()
-
+\dontrun{
+doge_get_data()
+}
 }

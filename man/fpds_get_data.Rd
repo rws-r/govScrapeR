@@ -19,6 +19,7 @@ An iterative function to query FPDS data by PIID using FPDS Atom Feed. See
 https://www.fpds.gov/fpdsng_cms/index.php/en/worksite for more information.
 }
 \examples{
+\dontrun{
 fpds_get_data(piid="XXXXXXXXX")
-
+}
 }

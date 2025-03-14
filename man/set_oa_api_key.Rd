@@ -16,6 +16,7 @@ An environmental variable
 Sets an environmental variable named OA_KEY with your OpenAI api key.
 }
 \examples{
+\dontrun{
 set_oa_api_key("XXXXXXXXXXXXX")
-
+}
 }

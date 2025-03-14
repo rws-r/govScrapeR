@@ -18,6 +18,7 @@ A printed data.frame.
 Present basic stats on the DOGE data scraped.
 }
 \examples{
-doge_summarize(data=x)
-
+\dontrun{
+doge_summarize(data)
+}
 }

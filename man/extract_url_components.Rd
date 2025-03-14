@@ -20,6 +20,8 @@ A data.frame
 Internal function designed to pull out url components in doge fpds_link field.
 }
 \examples{
+\dontrun{
 extract_url_components(df)
+}
 
 }

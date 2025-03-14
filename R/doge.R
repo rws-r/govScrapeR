@@ -3,7 +3,8 @@
 #' A fairly straightforward scraper that pulls data from dynamically-created
 #' scripts (javascript), cleans, and processes in table form.
 #'
-#' @param verbose
+#' @param verbose Logical, whether to produce messages
+#' @param saveFile Logical, whether to save file
 #'
 #' @importFrom rvest read_html
 #' @importFrom rvest html_nodes
@@ -13,12 +14,16 @@
 #' @importFrom dplyr  mutate
 #' @importFrom dplyr %>% 
 #' @importFrom dplyr rename
+#' @importFrom dplyr case_when
+#' @importFrom lubridate mdy
 #' @returns A named list comprised of dataframes.
-#' @export
-#'
-#' @examples get_doge_data()
-#' 
-doge_get_data <- function(verbose=TRUE){
+#' @examples 
+#' \dontrun{
+#' doge_get_data()
+#' }
+#' @export 
+doge_get_data <- function(verbose=TRUE,
+                          saveFile=FALSE){
 
   url <- "https://www.doge.gov/savings"
   
@@ -110,7 +115,12 @@ doge_get_data <- function(verbose=TRUE){
                grants=grants)
   
   if(verbose==TRUE)message("Writing file...")
-  saveRDS(data,paste0("data/DOGE/doge_grab_",as.Date(Sys.time()),".RDS"))
+  if(saveFile==TRUE){
+    savepath <- "/inst/extdata/DOGE/"
+    if(!dir.exists(savepath))
+      dir.create(savepath)
+    saveRDS(data,paste0(savepath,"doge_grab_",as.Date(Sys.time()),".RDS"))
+  }
   
   if(verbose==TRUE)message("Done.")
   return(data)
@@ -125,10 +135,11 @@ doge_get_data <- function(verbose=TRUE){
 #' @param return 
 #'
 #' @returns A printed data.frame.
+#' @examples
+#'\dontrun{
+#' doge_summarize(data)
+#' }
 #' @export
-#'
-#' @examples doge_summarize(data=x)
-#' 
 doge_summarize <- function(data=NULL,
                            return="all"){
   

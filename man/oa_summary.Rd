@@ -30,5 +30,7 @@ A text response.
 A packaged summary request for oa_query. Can be modified with two user args.
 }
 \examples{
+\dontrun{
 oa_summary(text="This is a bunch of text.")
+}
 }

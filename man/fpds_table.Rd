@@ -35,6 +35,8 @@ A function to read FDPS XML data, clean it, and create table data. Since
 between the two returns for tabulature.
 }
 \examples{
- fpds_table(x,ns,piid=piid_val,idv_piid=idv_PIID_val,contract_type=ct)
+\dontrun{
+fpds_table(x,ns,piid=piid_val,idv_piid=idv_PIID_val,contract_type=ct)
+}
 
 }

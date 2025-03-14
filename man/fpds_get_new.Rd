@@ -23,6 +23,7 @@ previously downloaded by FPDS. This will run requests to FPDS based only on
 new DOGE rows captured
 }
 \examples{
+\dontrun{
 fpds_get_new(doge_data,fpds_data)
-
+}
 }

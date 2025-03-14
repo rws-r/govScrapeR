@@ -16,17 +16,18 @@
 #' @importFrom xml2 xml_ns
 #' @importFrom readr type_convert
 #' @returns A named list, consisting of two dataframes: AWARDS and IDV.
+#' @examples
+#' \dontrun{
+#' fpds_get_data(piid="XXXXXXXXX")
+#' }
 #' @export
-#'
-#' @examples fpds_get_data(piid="XXXXXXXXX")
-#' 
 fpds_get_data <- function(piid=NULL,
                           return=NULL){
   
   ct <- contract_type
   
   ## Clear the tmp folder.
-  unlink(paste0("data/contracts/tmp/",grep("^tmp",list.files("data/contracts/tmp"),value = T)))
+  unlink(paste0("inst/extdata/contracts/tmp/",grep("^tmp",list.files("inst/extdata/contracts/tmp"),value = T)))
   ## Set chunk counter
   chunk=0
   
@@ -124,11 +125,11 @@ fpds_get_data <- function(piid=NULL,
         ## Save on 100 dls, save on end.
         if(i==calc){
           chunk <- chunk+1
-          saveRDS(dl,paste0("data/contracts/tmp/tmp_",chunk,".RDS"))
+          saveRDS(dl,paste0("inst/extdata/contracts/tmp/tmp_",chunk,".RDS"))
         }else{
           if((i %% 100)==0){
             chunk <- chunk+1
-            saveRDS(dl,paste0("data/contracts/tmp/tmp_",chunk,".RDS"))
+            saveRDS(dl,paste0("inst/extdata/contracts/tmp/tmp_",chunk,".RDS"))
             dl <- list(AWARDS=NULL,IDV=NULL)
           }
         }
@@ -138,7 +139,7 @@ fpds_get_data <- function(piid=NULL,
       close(pb)
       
       ## Read saved files into memory and bind rows.
-      files <- list.files(path="data/contracts/tmp",pattern = "\\.RDS$",full.names = T)
+      files <- list.files(path="inst/extdata/contracts/tmp",pattern = "\\.RDS$",full.names = T)
       awardFiles <- lapply(files, function(f) readRDS(f)$AWARDS)
       idvFiles <- lapply(files, function(f) readRDS(f)$IDV)
       mAF <- bind_rows(awardFiles)
@@ -185,8 +186,11 @@ fpds_get_data <- function(piid=NULL,
 #' @importFrom xml2 xml_name
 #' @importFrom xml2 xml_text
 #' @returns A data.frame.
-#'
-#' @examples  fpds_table(x,ns,piid=piid_val,idv_piid=idv_PIID_val,contract_type=ct)
+#' 
+#' @examples 
+#'\dontrun{
+#' fpds_table(x,ns,piid=piid_val,idv_piid=idv_PIID_val,contract_type=ct)
+#' }
 #' 
 fpds_table <- function(x,
                        ns=NULL,
@@ -290,9 +294,12 @@ fpds_table <- function(x,
 #' @param returnUniquePIIDs Logical, whether to return unique PIID values.
 #'
 #' @returns A printed data.frame, with optional vector of PIID values.
+#' 
+#' @examples 
+#' \dontrun{
+#' pds_stats(t,returnSummary=T,returnUniquePIIDS=F)
+#' }
 #' @export
-#'
-#' @examples fpds_stats(t,returnSummary=T,returnUniquePIIDS=F)
 
 fpds_stats <- function(df,
                        returnSummary=TRUE,
@@ -335,10 +342,11 @@ fpds_stats <- function(df,
 #'   simply the new data.
 #'
 #' @returns A named list comrpised of data.frames.
+#' @examples
+#' \dontrun{
+#' fpds_get_new(doge_data,fpds_data)
+#' }
 #' @export
-#'
-#' @examples fpds_get_new(doge_data,fpds_data)
-#' 
 fpds_get_new <- function(doge_data=NULL,
                          fpds_data=NULL,
                          return="combined"){

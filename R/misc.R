@@ -11,8 +11,6 @@ xex <- function(xml_data,
                 parent = NULL,
                 type="table",
                 prefix="ns1") {
-  library(xml2)
-  library(XML)
   
   if(type=="text"){
     name <- xml_name(xml_data)
@@ -95,13 +93,31 @@ update_categories <- function(categories=NULL,
   return(c)
 }
 
+#' Browser
+#' 
+#' An interactive data browser to navigate WH scraped files.
+#'
+#' @param dataset The WH data object 
+#' @param categoryFilter A category id to filter by.
+#' @param contentType Content type filter.
+#' @param row Select a particular folder. 
+#' @param mode Either 'first' or 'last'
+#'
+#' @returns An interactive text object.
+#' @importFrom stringr str_trim
+#' @importFrom stringr str_wrap
+#' @importFrom stringr str_split
+#' @examples 
+#' \dontrun{
+#' browser(data)
+#' }
+
 browser <- function(dataset=NULL,
                     categoryFilter = "Presidential Actions",
                     contentType = "AI_Summary",
                     row = NULL,
                     mode = "first"
 ){
-  require(stringr)
   message("Starting data browser")
   dataset <- dataset[dataset$Category==categoryFilter,]
   
@@ -196,7 +212,6 @@ browser <- function(dataset=NULL,
 
 
 check_bracket_mismatch <- function(json_string) {
-  library(dplyr)
   
   a <- data.frame(type="{",pos=gregexpr("\\{",json_string)[[1]])
   b <- data.frame(type="}",pos=gregexpr("\\}",json_string)[[1]])
@@ -274,7 +289,10 @@ check_bracket_mismatch <- function(json_string) {
 #'
 #' @returns A data.frame
 #'
-#' @examples extract_url_components(df)
+#' @examples
+#' \dontrun{
+#' extract_url_components(df)
+#' }
 #' 
 extract_url_components <- function(data=NULL,
                                    url_col="fpds_link",

@@ -13,3 +13,14 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 URL: https://rws-r.github.io/govScrapeR/
+Imports: 
+    dplyr,
+    ellmer,
+    httr,
+    jsonlite,
+    lubridate,
+    readr,
+    rvest,
+    scales,
+    stringr,
+    xml2

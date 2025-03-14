@@ -7,10 +7,11 @@
 #' @param key An api key 
 #'
 #' @returns An environmental variable
+#' @examples
+#'\dontrun{
+#' set_oa_api_key("XXXXXXXXXXXXX")
+#' }
 #' @export
-#'
-#' @examples set_oa_api_key("XXXXXXXXXXXXX")
-#' 
 set_oa_api_key <- function(key=NULL){
   if(is.null(key))
     stop("No API key supplied.")
@@ -29,8 +30,10 @@ set_oa_api_key <- function(key=NULL){
 #' @importFrom ellmer chat_openai
 #' 
 #' @returns Text object
-#'
-#' @examples oa_query("Tell me a story", api_key="XXXXXXX",model="gpt-4o-mini")
+#' @examples
+#'\dontrun{
+#' oa_query("Tell me a story", api_key="XXXXXXX",model="gpt-4o-mini")
+#' }
 
 oa_query <- function(prompt = NULL,
                      api_key = NULL,
@@ -64,9 +67,12 @@ oa_query <- function(prompt = NULL,
 #' @param model Select the proper mode. Recommended (and default): gpt-4o-mini for cost effectiveness.
 #'
 #' @returns A text response.
+#' @examples
+#'\dontrun{
+#' oa_summary(text="This is a bunch of text.")
+#' }
 #' @export
-#'
-#' @examples oa_summary(text="This is a bunch of text.")
+#' 
 oa_summary <- function(text=NULL,
                        summary_prompt=NULL,
                        summary_sentence_length=5,

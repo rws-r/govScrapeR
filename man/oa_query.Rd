@@ -20,5 +20,7 @@ Text object
 Wrapper for ellmer:chat_openai(), binding prompt, api key, and model.
 }
 \examples{
+\dontrun{
 oa_query("Tell me a story", api_key="XXXXXXX",model="gpt-4o-mini")
+}
 }
