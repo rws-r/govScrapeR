@@ -5,6 +5,7 @@
 #'
 #' @param verbose Logical, whether to produce messages
 #' @param saveFile Logical, whether to save file
+#' @param saveDir File dirctory path for saving files.
 #'
 #' @importFrom rvest read_html
 #' @importFrom rvest html_nodes
@@ -23,7 +24,8 @@
 #' }
 #' @export 
 doge_get_data <- function(verbose=TRUE,
-                          saveFile=FALSE){
+                          saveFile=FALSE,
+                          saveDir=NULL){
 
   url <- "https://www.doge.gov/savings"
   
@@ -81,8 +83,7 @@ doge_get_data <- function(verbose=TRUE,
                                                 update_date=case_when(
                                                   grepl("-", update_date) ~ as.Date(update_date,format = "%Y-%m-%d"),
                                                   grepl("\\/",update_date) ~ mdy(update_date),
-                                                  .default=NA),
-                                                savings=value))
+                                                  .default=NA)))
   
   leases <- suppressWarnings(leases %>% dplyr::mutate(date=ifelse(date=="",NA,date),
                                                       date=case_when(
@@ -91,9 +92,7 @@ doge_get_data <- function(verbose=TRUE,
                                                         .default=NA),
                                                       ceiling_value=as.numeric(ceiling_value),
                                                       value=as.numeric(value),
-                                                      sq_ft=gsub(",","",sq_ft),
-                                                      savings=value
-  ))
+                                                      sq_ft=gsub(",","",sq_ft)))
   
   grants <- suppressWarnings(grants %>% dplyr::mutate(update_date=ifelse(update_date=="",NA,update_date),
                                                       #   award_id = gsub("-M*","",award_id), # Why did this strip this out??
@@ -102,9 +101,7 @@ doge_get_data <- function(verbose=TRUE,
                                                         grepl("\\/",update_date) ~ mdy(update_date),
                                                         .default=NA),
                                                       ceiling_value=as.numeric(ceiling_value),
-                                                      value=as.numeric(value),
-                                                      savings=value
-  ))
+                                                      value=as.numeric(value)))
   
   contracts_url_elements <- extract_url_components(contracts)
   contracts <- cbind(contracts,contracts_url_elements)
@@ -116,7 +113,7 @@ doge_get_data <- function(verbose=TRUE,
   
   if(verbose==TRUE)message("Writing file...")
   if(saveFile==TRUE){
-    savepath <- "/inst/extdata/DOGE/"
+    savepath <- saveDir
     if(!dir.exists(savepath))
       dir.create(savepath)
     saveRDS(data,paste0(savepath,"doge_grab_",as.Date(Sys.time()),".RDS"))

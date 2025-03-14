@@ -23,9 +23,7 @@
 #' @export
 fpds_get_data <- function(piid=NULL,
                           return=NULL){
-  
-  ct <- contract_type
-  
+
   ## Clear the tmp folder.
   unlink(paste0("inst/extdata/contracts/tmp/",grep("^tmp",list.files("inst/extdata/contracts/tmp"),value = T)))
   ## Set chunk counter
@@ -37,134 +35,131 @@ fpds_get_data <- function(piid=NULL,
   dl <- list(AWARDS=NULL,
              IDV=NULL)
   
-  if(!is.null(file)){
-    x <- file
-  }else{
-    if(!is.null(piid) | !is.null(idv_PIID)){
-      if(!is.null(piid))
-        calc <- length(piid)
-      else
-        calc <- length(idv_PIID)
+  if(!is.null(piid)){
+    if(!is.null(piid))
+      calc <- length(piid)
+    
+    pb <- txtProgressBar(min=0,max=calc,title="Data Grab Iterations",style = 3)
+    for(i in 1:calc){
+      if(length(calc)>1)
+        message(paste0("Multiple PIIDs supplied. Iteration ",i,"/",length(calc)))
       
-      pb <- txtProgressBar(min=0,max=calc,title="Data Grab Iterations",style = 3)
-      for(i in 1:calc){
-        if(length(calc)>1)
-          message(paste0("Multiple PIIDs supplied. Iteration ",i,"/",length(calc)))
-        
-        #if(!is.null(piid[i]))
-        piid_val <- paste0("PIID:",piid[i])
-        # #if(!is.null(idv_PIID[i]))
-        # idv_PIID_val <- paste0("idvPIID:",idv_PIID[i])
-        # if(!is.null(contract_type))
-        #   contract_type <- paste0("contractType:",contract_type)
-        # if(!is.null(agency_id))
-        #   agency_id <- paste0("agencyID:",agency_id)
-        # if(!is.null(mod_number))
-        #   mod_number <- paste0("modNumber:",mod_number)
-        # if(!is.null(idv_agency_id))
-        #   idv_agency_id <- paste0("idv_agency_id:",idv_agency_id)
-        base_url <- "https://www.fpds.gov/ezsearch/FEEDS/ATOM?FEEDNAME=PUBLIC&q="
-        params <- piid_val
-        url <- paste0(base_url,params)
-        
-        # Make the API request to get the XML data
-        response <- GET(url)
-        
-        if(!is.null(return))
-          if(return=="raw")
-            return(response)
-        
-        # Check if the request was successful
-        if(status_code(response) == 200){
-          # Parse the XML response
-          xml_data <- content(response, "text")
-          x <- read_xml(xml_data)
-        } else {
-          print(paste("Failed to retrieve data. HTTP status:", status_code(response)))
-          stop()
-        }
-        
-        # Set namespace
-        ns <- xml_ns(x)
-        
-        # Get award type
-        at <- xml2::xml_find_first(x,"//ns1:award",ns=ns)
-        
-        if(!is.na(at)){
-          ct <- "AWARD"
-        }else{
-          ct <- "IDV"
-        }
-        
-        t <- fpds_table(x,
-                        ns,
-                        piid=piid_val,
-                        idv_piid=idv_PIID_val,
-                        contract_type=ct)
-        
-        if(ct=="AWARD"){
-          if(is.null(dl$AWARDS)){
-            dl$AWARDS <- t
-          }else{
-            a <- dl$AWARDS
-            a <- suppressMessages(dplyr::bind_rows(a,t))
-            dl$AWARDS <- a
-          }
-        }else if(ct=="IDV"){
-          if(is.null(dl$IDV)){
-            dl$IDV <- t
-          }else{
-            b <- dl$IDV
-            b <- suppressMessages(dplyr::bind_rows(b,t))
-            dl$IDV <- b
-          }
-        }else{
-          stop("Not a valid contract_type.")
-        }
-        
-        ## Save on 100 dls, save on end.
-        if(i==calc){
-          chunk <- chunk+1
-          saveRDS(dl,paste0("inst/extdata/contracts/tmp/tmp_",chunk,".RDS"))
-        }else{
-          if((i %% 100)==0){
-            chunk <- chunk+1
-            saveRDS(dl,paste0("inst/extdata/contracts/tmp/tmp_",chunk,".RDS"))
-            dl <- list(AWARDS=NULL,IDV=NULL)
-          }
-        }
-        
-        setTxtProgressBar(pb,i)
+      #if(!is.null(piid[i]))
+      piid_val <- paste0("PIID:",piid[i])
+      # #if(!is.null(idv_PIID[i]))
+      # idv_PIID_val <- paste0("idvPIID:",idv_PIID[i])
+      # if(!is.null(contract_type))
+      #   contract_type <- paste0("contractType:",contract_type)
+      # if(!is.null(agency_id))
+      #   agency_id <- paste0("agencyID:",agency_id)
+      # if(!is.null(mod_number))
+      #   mod_number <- paste0("modNumber:",mod_number)
+      # if(!is.null(idv_agency_id))
+      #   idv_agency_id <- paste0("idv_agency_id:",idv_agency_id)
+      base_url <- "https://www.fpds.gov/ezsearch/FEEDS/ATOM?FEEDNAME=PUBLIC&q="
+      params <- piid_val
+      url <- paste0(base_url,params)
+      
+      # Make the API request to get the XML data
+      response <- GET(url)
+      
+      if(!is.null(return))
+        if(return=="raw")
+          return(response)
+      
+      # Check if the request was successful
+      if(status_code(response) == 200){
+        # Parse the XML response
+        xml_data <- content(response, "text")
+        x <- read_xml(xml_data)
+      } else {
+        print(paste("Failed to retrieve data. HTTP status:", status_code(response)))
+        stop()
       }
-      close(pb)
       
-      ## Read saved files into memory and bind rows.
-      files <- list.files(path="inst/extdata/contracts/tmp",pattern = "\\.RDS$",full.names = T)
-      awardFiles <- lapply(files, function(f) readRDS(f)$AWARDS)
-      idvFiles <- lapply(files, function(f) readRDS(f)$IDV)
-      mAF <- bind_rows(awardFiles)
-      mIF <- bind_rows(idvFiles)
-      dl <- list(AWARDS=mAF,IDV=mIF)
+      # Set namespace
+      ns <- xml_ns(x)
       
-      ## Rename PIID columns (problem with xml nesting)
-      if(!is.null(dl$IDV)){
-        plocs <- grep("PIID",names(dl$IDV))
-        alocs <- grep("agencyID",names(dl$IDV))
-        mlocs <- grep("modNumber",names(dl$IDV))
-        names(dl$IDV)[plocs[1]] <- "PIID"
-        names(dl$IDV)[plocs[2]] <- "idvPIID"
-        names(dl$IDV)[alocs[1]] <- "agencyID"
-        names(dl$IDV)[alocs[2]] <- "idvAgencyID"
-        names(dl$IDV)[mlocs[1]] <- "modNumber"
-        names(dl$IDV)[mlocs[2]] <- "idvModNumber"
+      # Get award type
+      at <- xml2::xml_find_first(x,"//ns1:award",ns=ns)
+      
+      if(!is.na(at)){
+        ct <- "AWARD"
+      }else{
+        ct <- "IDV"
       }
-      if(!is.null(dl$AWARDS))
-        dl$AWARDS <- readr::type_convert(dl$AWARDS)
-      if(!is.null(dl$IDV))
-        dl$IDV <- readr::type_convert(dl$IDV)
       
-      return(dl)
+      t <- fpds_table(x,
+                      ns,
+                      piid=piid_val,
+                      idv_piid=idv_PIID_val,
+                      contract_type=ct)
+      
+      if(ct=="AWARD"){
+        if(is.null(dl$AWARDS)){
+          dl$AWARDS <- t
+        }else{
+          a <- dl$AWARDS
+          a <- suppressMessages(dplyr::bind_rows(a,t))
+          dl$AWARDS <- a
+        }
+      }else if(ct=="IDV"){
+        if(is.null(dl$IDV)){
+          dl$IDV <- t
+        }else{
+          b <- dl$IDV
+          b <- suppressMessages(dplyr::bind_rows(b,t))
+          dl$IDV <- b
+        }
+      }else{
+        stop("Not a valid contract_type.")
+      }
+      
+      temp_path <- file.path(tempdir(), "fpds/tmp")
+      dir.create(temp_path, recursive = TRUE, showWarnings = FALSE)
+      
+      ## Save on 100 downloads, save on the end.
+      if (i == calc) {
+        chunk <- chunk + 1
+        saveRDS(dl, file.path(temp_path, paste0("tmp_", chunk, ".RDS")))
+      }else{
+        if ((i %% 100) == 0) {
+          chunk <- chunk + 1
+          saveRDS(dl, file.path(temp_path, paste0("tmp_", chunk, ".RDS")))
+          dl <- list(AWARDS = NULL, IDV = NULL)
+        }
+      }
+      
+      setTxtProgressBar(pb,i)
     }
+    close(pb)
+    
+    ## Read saved files into memory and bind rows.
+    files <- list.files(path = temp_path, pattern = "\\.RDS$", full.names = TRUE)
+    awardFiles <- lapply(files, function(f) readRDS(f)$AWARDS)
+    idvFiles <- lapply(files, function(f) readRDS(f)$IDV)
+    mAF <- bind_rows(awardFiles)
+    mIF <- bind_rows(idvFiles)
+    dl <- list(AWARDS=mAF,IDV=mIF)
+    
+    ## Rename PIID columns (problem with xml nesting)
+    if(!is.null(dl$IDV)){
+      plocs <- grep("PIID",names(dl$IDV))
+      alocs <- grep("agencyID",names(dl$IDV))
+      mlocs <- grep("modNumber",names(dl$IDV))
+      names(dl$IDV)[plocs[1]] <- "PIID"
+      names(dl$IDV)[plocs[2]] <- "idvPIID"
+      names(dl$IDV)[alocs[1]] <- "agencyID"
+      names(dl$IDV)[alocs[2]] <- "idvAgencyID"
+      names(dl$IDV)[mlocs[1]] <- "modNumber"
+      names(dl$IDV)[mlocs[2]] <- "idvModNumber"
+    }
+    if(!is.null(dl$AWARDS))
+      dl$AWARDS <- readr::type_convert(dl$AWARDS)
+    if(!is.null(dl$IDV))
+      dl$IDV <- readr::type_convert(dl$IDV)
+    
+    return(dl)
   }
 }
 

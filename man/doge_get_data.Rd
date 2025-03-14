@@ -4,12 +4,14 @@
 \alias{doge_get_data}
 \title{DOGE Get Data}
 \usage{
-doge_get_data(verbose = TRUE, saveFile = FALSE)
+doge_get_data(verbose = TRUE, saveFile = FALSE, saveDir = NULL)
 }
 \arguments{
 \item{verbose}{Logical, whether to produce messages}
 
 \item{saveFile}{Logical, whether to save file}
+
+\item{saveDir}{File dirctory path for saving files.}
 }
 \value{
 A named list comprised of dataframes.
