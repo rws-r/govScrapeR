@@ -4,12 +4,19 @@
 \alias{fpds_get_new}
 \title{FPDS Get New}
 \usage{
-fpds_get_new(doge_data = NULL, fpds_data = NULL, return = "combined")
+fpds_get_new(
+  doge_data = NULL,
+  fpds_data = NULL,
+  verbose = TRUE,
+  return = "combined"
+)
 }
 \arguments{
 \item{doge_data}{A data object created by doge_get_data()}
 
 \item{fpds_data}{A data object created by fpds_get_data()}
+
+\item{verbose}{Logical, whether to return messages.}
 
 \item{return}{Whether to return a merged file with new and old data, or
 simply the new data.}

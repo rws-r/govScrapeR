@@ -1,5 +1,5 @@
 test_that("doge_get_data() works properly", {
-  d <- doge_get_data(verbose=T)
+  d <- doge_get_data(verbose=F)
   
   expect_length(d,3)
   expect_s3_class(d$contracts,"data.frame")

@@ -17,7 +17,7 @@ test_that("fpds_stats() returns output", {
 })
 
 test_that("fpds_get_new() properly captures new data",{
-  n <- fpds_get_new(piidsnew,d)
+  n <- fpds_get_new(piidsnew,d,verbose = F)
   expect_type(n,"list")
   
 })

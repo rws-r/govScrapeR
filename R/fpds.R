@@ -349,6 +349,7 @@ fpds_stats <- function(df,
 #' @param fpds_data A data object created by fpds_get_data()
 #' @param return Whether to return a merged file with new and old data, or
 #'   simply the new data.
+#' @param verbose Logical, whether to return messages.
 #' @importFrom readr type_convert
 #'
 #' @returns A named list comrpised of data.frames.
@@ -359,6 +360,7 @@ fpds_stats <- function(df,
 #' @export
 fpds_get_new <- function(doge_data=NULL,
                          fpds_data=NULL,
+                         verbose=TRUE,
                          return="combined"){
   
   if(inherits(doge_data,"list"))
@@ -381,9 +383,9 @@ fpds_get_new <- function(doge_data=NULL,
   newPIID <- setdiff(dd,ai)
   
   if(length(newPIID)>0)
-    message(paste0("Found ",length(newPIID)," new entries. Starting download."))
+    if(verbose==T)message(paste0("Found ",length(newPIID)," new entries. Starting download."))
   
-  newData <- fpds_get_data(piid = newPIID)
+  newData <- fpds_get_data(piid = newPIID,verbose=verbose)
 
   if(return=="combined"){ 
     msa <- match_col_types(fpds_data$AWARDS,newData$AWARDS)
