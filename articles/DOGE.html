@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">govScrapeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,12 +82,9 @@ table format.</p>
 <span><span class="co">#&gt; Converting to JSON...</span></span>
 <span><span class="co">#&gt; Building objects...</span></span>
 <span><span class="co">#&gt; Dataframe cleaning...</span></span>
-<span><span class="co">#&gt; New names:</span></span>
-<span><span class="co">#&gt; New names:</span></span>
 <span><span class="co">#&gt; Building return list...</span></span>
 <span><span class="co">#&gt; Writing file...</span></span>
 <span><span class="co">#&gt; Done.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `` -&gt; `...1`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "contracts" "leases"    "grants"</span></span></code></pre></div>
 <p>As of the writing of this vignette, DOGE displayed data on three
@@ -108,39 +105,6 @@ contract.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fpds_get_data.html">fpds_get_data</a></span><span class="op">(</span>piid<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9523ZY21P0045"</span>,<span class="st">"9531CB24A0009"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span></span>
-<span><span class="co">#&gt; New names:</span></span>
-<span><span class="co">#&gt; New names:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span> cols( .default =</span></span>
-<span><span class="co">#&gt; col_logical(), agencyID = <span style="color: #00BB00;">col_double()</span>, PIID = <span style="color: #BB0000;">col_character()</span>, modNumber =</span></span>
-<span><span class="co">#&gt; <span style="color: #BB0000;">col_character()</span>, transactionNumber = <span style="color: #00BB00;">col_double()</span>, signedDate =</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">col_datetime(format = "")</span>, effectiveDate = <span style="color: #0000BB;">col_datetime(format = "")</span>,</span></span>
-<span><span class="co">#&gt; currentCompletionDate = <span style="color: #0000BB;">col_datetime(format = "")</span>, ultimateCompletionDate =</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">col_datetime(format = "")</span>, obligatedAmount = <span style="color: #00BB00;">col_double()</span>,</span></span>
-<span><span class="co">#&gt; baseAndExercisedOptionsValue = <span style="color: #00BB00;">col_double()</span>, baseAndAllOptionsValue =</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">col_double()</span>, totalObligatedAmount = <span style="color: #00BB00;">col_double()</span>,</span></span>
-<span><span class="co">#&gt; totalBaseAndExercisedOptionsValue = <span style="color: #00BB00;">col_double()</span>, totalBaseAndAllOptionsValue =</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">col_double()</span>, contractingOfficeAgencyID = <span style="color: #00BB00;">col_double()</span>, contractingOfficeID =</span></span>
-<span><span class="co">#&gt; <span style="color: #BB0000;">col_character()</span>, fundingRequestingAgencyID = <span style="color: #00BB00;">col_double()</span>,</span></span>
-<span><span class="co">#&gt; fundingRequestingOfficeID = <span style="color: #BB0000;">col_character()</span>, foreignFunding = <span style="color: #BB0000;">col_character()</span>,</span></span>
-<span><span class="co">#&gt; feePaidForUseOfService = <span style="color: #00BB00;">col_double()</span> # ... with 72 more columns ) <span style="color: #00BBBB;">ℹ</span> Use</span></span>
-<span><span class="co">#&gt; `spec()` for the full column specifications.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span> cols( .default =</span></span>
-<span><span class="co">#&gt; col_logical(), agencyID = <span style="color: #BB0000;">col_character()</span>, PIID = <span style="color: #BB0000;">col_character()</span>, modNumber =</span></span>
-<span><span class="co">#&gt; <span style="color: #BB0000;">col_character()</span>, idvAgencyID = <span style="color: #00BB00;">col_double()</span>, idvPIID = <span style="color: #BB0000;">col_character()</span>,</span></span>
-<span><span class="co">#&gt; idvModNumber = <span style="color: #BB0000;">col_character()</span>, signedDate = <span style="color: #0000BB;">col_datetime(format = "")</span>,</span></span>
-<span><span class="co">#&gt; effectiveDate = <span style="color: #0000BB;">col_datetime(format = "")</span>, lastDateToOrder =</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">col_datetime(format = "")</span>, obligatedAmount = <span style="color: #00BB00;">col_double()</span>,</span></span>
-<span><span class="co">#&gt; baseAndAllOptionsValue = <span style="color: #00BB00;">col_double()</span>, totalEstimatedOrderValue = <span style="color: #00BB00;">col_double()</span>,</span></span>
-<span><span class="co">#&gt; totalObligatedAmount = <span style="color: #00BB00;">col_double()</span>, totalBaseAndAllOptionsValue =</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">col_double()</span>, contractingOfficeAgencyID = <span style="color: #BB0000;">col_character()</span>, contractingOfficeID</span></span>
-<span><span class="co">#&gt; = <span style="color: #BB0000;">col_character()</span>, fundingRequestingAgencyID = <span style="color: #BB0000;">col_character()</span>,</span></span>
-<span><span class="co">#&gt; fundingRequestingOfficeID = <span style="color: #BB0000;">col_character()</span>, foreignFunding = <span style="color: #BB0000;">col_character()</span>,</span></span>
-<span><span class="co">#&gt; whoCanUse = <span style="color: #BB0000;">col_character()</span> # ... with 74 more columns ) <span style="color: #00BBBB;">ℹ</span> Use `spec()` for the</span></span>
-<span><span class="co">#&gt; full column specifications.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `countryCode` -&gt; `countryCode...144`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `countryCode` -&gt; `countryCode...160`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "AWARDS" "IDV"</span></span></code></pre></div>
 <p>Two types of contracts are identified in DOGE data: awards and IDV.
