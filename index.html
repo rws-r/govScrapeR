@@ -51,8 +51,24 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Let's keep government accountable! govScrapeR is a basic R package to scrape and return data from government websites in table format. At its most basic level, govScrapeR was written to pull data from whitehouse.gov, and doge.gov. Functionality primarily focuses on news releases and the DOGE "savings" page, to allow for comparison between posted data, and records on fpds.gov. This package is in early stages, and as such has plenty of room to grow. Happy scraping!
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="govscraper">govScrapeR<a class="anchor" aria-label="anchor" href="#govscraper"></a>
+</h1></div>
+<!-- badges: start -->
+<!-- badges: end -->
+<p>govScrapeR is a simple set of scripts to grab constantly changing government data, and present it a workable format for data analysis. It began as a desire to capture and categorize White House press releases and executive orders—as they were coming fast and furious immediately after the 2025 term began. I decided to make it public after DOGE released their website on savings, and questions about their own transparency began to emerge.</p>
+<p>Currently, govScrapeR offers two primary functions. The most recent, and useful is related to doge.gov/savings. Because doge.gov has published their findings online, but not as a dataset, govScrapeR scrapes the dynamically-created web data and returns it in table form. DOGE pulls their data from fpds.gov, so I have also included functionality that queries the ATOM feed at fpds.gov based on the PIID numbers supplied by DOGE. This can be used for comparison and fact-checking.</p>
+<p>The other functionality captures data from whitehouse.gov/news. If desired, it also integrates with OpenAI to summarize and categorize posts from the website. I am including this, but it’s still in somewhat rough shape.</p>
+<p>This project is intended to be open, and to foster greater transparency of government actions. Feel free to fork, expand, port, or suggest improvements</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of govScrapeR from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rws-r/govScrapeR"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">

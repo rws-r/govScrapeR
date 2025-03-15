@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   DOGE: DOGE.html
   govScrapeR: govScrapeR.html
-last_built: 2025-03-15T13:44Z
+last_built: 2025-03-15T13:51Z
 urls:
   reference: https://rws-r.github.io/govScrapeR/reference
   article: https://rws-r.github.io/govScrapeR/articles
