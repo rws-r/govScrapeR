@@ -17,10 +17,9 @@ knitr::opts_chunk$set(
 ```{r setup,echo=FALSE}
 library(govScrapeR)
 ```
-#DOGE Functionality
 This package has two main operations: scraping data from doge.gov, and pulling data queries from fpds.gov. The primary functions for each are `doge_get_data()` and `fpds_get_data()`, respectively. Several convenience functions are provided on top of these two. 
 
-##Getting DOGE Data
+## Getting DOGE Data
 As of now, the scraper captures data from doge.gov/savings. It relies on ``rvest` and reads dynamically-generated scripts. The data is then cleaned, and returned in table format. 
 ```{r,echo=TRUE}
 df <- doge_get_data(verbose=T,saveFile = F)
@@ -30,7 +29,7 @@ As of the writing of this vignette, DOGE displayed data on three groups: contrac
 
 If desired, you can save data to an .RDS file by flagging `saveFile=TRUE`, and providing a directory location to the `saveDir` parameter. 
 
-##Getting FPDS Data
+## Getting FPDS Data
 The `contracts` table has an `fpds_link` column, allowing the user to click through to the relevant entry on fpds.gov. There appear to be inconsistencies. Therefore, to assist in validating published data with government data, you can use `fpds_get_data()` to query the ATOM feed for each contract.
 ```{r}
 f <- fpds_get_data(piid=c("9523ZY21P0045","9531CB24A0009"))
@@ -40,10 +39,10 @@ Two types of contracts are identified in DOGE data: awards and IDV. Information 
 
 As a note, to avoid overloading memory, FPDS data is written to a `tempdir()` location, then merged at the end of the function. 
 
-##Updating FPDS Data
+## Updating FPDS Data
 The data from doge.gov/savings is periodically updated. When it is, you can use `fpds_get_new()` with the new DOGE data, and an existing FPDS data object to identify and query only the new additions to the DOGE data. This alleviates unnecessarily long queries every time there's a change on doge.gov/savings.
 
-#Convenience Functions
+## Convenience Functions
 Two very basic convenience functions are available. First, `doge_summarise()` presents basic statistical information about the dataset downloaded from doge.gov/savings. Second, `fpds_stats` lists very basic information about the number of rows downloaded from FPDS. 
 ```{r}
 doge_summarize(df)
