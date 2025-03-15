@@ -5,6 +5,7 @@
 #'
 #' @param piid A PIID value or vector of values.  
 #' @param return If "raw", output raw HTML file.
+#' @param verbose Logical, to display progressbar.
 #'
 #' @importFrom dplyr %>% 
 #' @importFrom dplyr bind_rows
@@ -22,7 +23,8 @@
 #' }
 #' @export
 fpds_get_data <- function(piid=NULL,
-                          return=NULL){
+                          return=NULL,
+                          verbose=TRUE){
 
   ## Clear the tmp folder.
   unlink(paste0("inst/extdata/contracts/tmp/",grep("^tmp",list.files("inst/extdata/contracts/tmp"),value = T)))
@@ -39,7 +41,7 @@ fpds_get_data <- function(piid=NULL,
     if(!is.null(piid))
       calc <- length(piid)
     
-    pb <- txtProgressBar(min=0,max=calc,title="Data Grab Iterations",style = 3)
+    if(verbose==T)pb <- txtProgressBar(min=0,max=calc,title="Data Grab Iterations",style = 3)
     for(i in 1:calc){
       if(length(calc)>1)
         message(paste0("Multiple PIIDs supplied. Iteration ",i,"/",length(calc)))
@@ -130,16 +132,22 @@ fpds_get_data <- function(piid=NULL,
         }
       }
       
-      setTxtProgressBar(pb,i)
+      if(verbose==T)setTxtProgressBar(pb,i)
     }
-    close(pb)
+    if(verbose==T)close(pb)
     
     ## Read saved files into memory and bind rows.
     files <- list.files(path = temp_path, pattern = "\\.RDS$", full.names = TRUE)
     awardFiles <- lapply(files, function(f) readRDS(f)$AWARDS)
     idvFiles <- lapply(files, function(f) readRDS(f)$IDV)
-    mAF <- bind_rows(awardFiles)
-    mIF <- bind_rows(idvFiles)
+    if(length(awardFiles)>=1 & !is.null(awardFiles[[1]]))
+      mAF <-  suppressMessages(bind_rows(awardFiles))
+    else
+      mAF <- NULL
+    if(length(idvFiles)>=1 & !is.null(idvFiles[[1]]))
+      mIF <-  suppressMessages(bind_rows(idvFiles))
+    else
+      mIF <- NULL
     dl <- list(AWARDS=mAF,IDV=mIF)
     
     ## Rename PIID columns (problem with xml nesting)
@@ -154,10 +162,16 @@ fpds_get_data <- function(piid=NULL,
       names(dl$IDV)[mlocs[1]] <- "modNumber"
       names(dl$IDV)[mlocs[2]] <- "idvModNumber"
     }
-    if(!is.null(dl$AWARDS))
-      dl$AWARDS <- readr::type_convert(dl$AWARDS)
-    if(!is.null(dl$IDV))
-      dl$IDV <- readr::type_convert(dl$IDV)
+    
+    # Make sure we're starting with all character strings. Then use type_convert.
+    if(!is.null(dl$AWARDS)){
+      dl$AWARDS <- data.frame(lapply(dl$AWARDS, function(x) if(is.factor(x)) as.character(x) else x), stringsAsFactors = FALSE)
+      dl$AWARDS <- suppressMessages(readr::type_convert(dl$AWARDS))
+    }
+    if(!is.null(dl$IDV)){
+      dl$IDV <- data.frame(lapply(dl$IDV, function(x) if(is.factor(x)) as.character(x) else x), stringsAsFactors = FALSE)
+      dl$IDV <-  suppressMessages(readr::type_convert(dl$IDV))
+    }
     
     return(dl)
   }
@@ -332,9 +346,10 @@ fpds_stats <- function(df,
 #' new DOGE rows captured
 #'
 #' @param doge_data A data object created by doge_get_data()
-#' @param fpds_data A data object created by fpds()
+#' @param fpds_data A data object created by fpds_get_data()
 #' @param return Whether to return a merged file with new and old data, or
 #'   simply the new data.
+#' @importFrom readr type_convert
 #'
 #' @returns A named list comrpised of data.frames.
 #' @examples
@@ -345,6 +360,7 @@ fpds_stats <- function(df,
 fpds_get_new <- function(doge_data=NULL,
                          fpds_data=NULL,
                          return="combined"){
+  
   if(inherits(doge_data,"list"))
     dd <- doge_data$contracts$PIID
   else if(inherits(doge_data,"data.frame"))
@@ -352,7 +368,7 @@ fpds_get_new <- function(doge_data=NULL,
   else if(inherits(doge_data,"character"))
     dd <- doge_data
   else
-    stop("What's up with your doge_data??")
+    stop("Supplied DOGE data not valid.")
   
   if(inherits(fpds_data,"list")){
     a <- unique(fpds_data$AWARDS$PIID)
@@ -367,13 +383,20 @@ fpds_get_new <- function(doge_data=NULL,
   if(length(newPIID)>0)
     message(paste0("Found ",length(newPIID)," new entries. Starting download."))
   
-  newData <- fpds(piid = newPIID)
-  
+  newData <- fpds_get_data(piid = newPIID)
+
   if(return=="combined"){ 
-    oa <- fpds_data$AWARDS
-    oi <- fpds_data$IDV
-    nda <- dplyr::bind_rows(oa,newData$AWARDS)
-    ndi <- dplyr::bind_rows(oi,newData$IDV)
+    msa <- match_col_types(fpds_data$AWARDS,newData$AWARDS)
+    msi <- match_col_types(fpds_data$IDV,newData$IDV)
+    if(!is.null(msa$master) & !is.null(msa$slave))
+      nda <-  suppressMessages(dplyr::bind_rows(msa$master,msa$slave))
+    else
+      nda <- fpds_data$AWARDS
+    if(!is.null(msi$master) & !is.null(msi$slave))
+      ndi <-  suppressMessages(dplyr::bind_rows(msi$master,msi$slave))
+    else
+      ndi <- fpds_data$IDV
+    
     nd <- list(AWARDS=nda,
                IDV=ndi)
   }else{

@@ -9,7 +9,7 @@ fpds_get_new(doge_data = NULL, fpds_data = NULL, return = "combined")
 \arguments{
 \item{doge_data}{A data object created by doge_get_data()}
 
-\item{fpds_data}{A data object created by fpds()}
+\item{fpds_data}{A data object created by fpds_get_data()}
 
 \item{return}{Whether to return a merged file with new and old data, or
 simply the new data.}

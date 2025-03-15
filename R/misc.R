@@ -315,7 +315,7 @@ extract_url_components <- function(data=NULL,
     if(i==1)
       y <- x
     else
-      y <- dplyr::bind_rows(y,x)
+      y <- suppressMessages(dplyr::bind_rows(y,x))
   }
   return(y)
 }
@@ -713,4 +713,72 @@ load_FPDS_fields <- function(contract_type=NULL){
     return(unlist(raw_fields_IDV))
   else
     stop("Invalid type.")
+}
+
+#' match_col_types
+#' 
+#' Internal function to clone structure of a dataframe.
+#'
+#' @param master Primary data.frame to source from.
+#' @param slave Data.frame to clone.
+#'
+#' @returns A data.frame.
+#'
+#' @examples 
+#' \dontrun{
+#' match_col_types(a,b)
+#' }
+#' 
+match_col_types <- function(master=NULL,
+                            slave=NULL){
+  
+  if(!is.null(master) & !is.null(slave)){
+    if(ncol(master)!=ncol(slave))
+      stop("match_col_types() > Columms of data.frames do not match.")
+    if(FALSE %in% (names(master)==names(slave))){
+      message("Column names do not match. Will be resolved in bind_rows.")
+    }
+    for(i in 1:ncol(slave)){
+      t <- master[[i]]
+      if (is.character(t)){
+        slave[,i] <- as.character(slave[,i])
+      }else if (is.numeric(t)){
+        if(is.numeric(slave[,i])){
+          slave[,i] <- as.numeric(slave[,i])
+        }else{
+          master[,i] <- as.character(master[,i])
+          slave[,i] <- as.character(slave[,i])
+        }
+      }else if (is.logical(t)){
+        slave[,i] <- as.logical(slave[,i])
+      }else if (inherits(t, "POSIXct")){
+        slave[,i] <- as.POSIXct(slave[,i])
+      }else if (inherits(t, "Date")){
+        slave[,i] <- as.Date(slave[,i])
+      }else if (is.complex(t)){
+        slave[,i] <- as.complex(slave[,i])
+      }else if (is.double(t)){
+        if(is.numeric(slave[,i])){
+          slave[,i] <- as.double(slave[,i])
+        }else{
+          master[,i] <- as.character(master[,i])
+          slave[,i] <- as.character(slave[,i])
+        }
+      }else if (is.integer(t)){
+        if(is.numeric(slave[,i])){
+          slave[,i] <- as.integer(slave[,i])
+        }else{
+          master[,i] <- as.character(master[,i])
+          slave[,i] <- as.character(slave[,i])
+        }
+      }else if (is.list(t)){
+        slave[,i] <- as.list(slave[,i])
+      }else{
+        stop("No valid column types available in this data.frame")
+      }
+    }
+  }
+  cleaned_data <- list(master=master,
+                       slave=slave)
+  return(cleaned_data)
 }

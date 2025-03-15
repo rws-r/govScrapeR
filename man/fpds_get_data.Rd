@@ -4,12 +4,14 @@
 \alias{fpds_get_data}
 \title{Get FPDS Data}
 \usage{
-fpds_get_data(piid = NULL, return = NULL)
+fpds_get_data(piid = NULL, return = NULL, verbose = TRUE)
 }
 \arguments{
 \item{piid}{A PIID value or vector of values.}
 
 \item{return}{If "raw", output raw HTML file.}
+
+\item{verbose}{Logical, to display progressbar.}
 }
 \value{
 A named list, consisting of two dataframes: AWARDS and IDV.
