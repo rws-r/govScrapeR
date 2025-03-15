@@ -64,15 +64,17 @@
 
     
     
-<p>#DOGE Functionality This package has two main operations: scraping
-data from doge.gov, and pulling data queries from fpds.gov. The primary
-functions for each are <code><a href="../reference/doge_get_data.html">doge_get_data()</a></code> and
-<code><a href="../reference/fpds_get_data.html">fpds_get_data()</a></code>, respectively. Several convenience
-functions are provided on top of these two.</p>
-<p>##Getting DOGE Data As of now, the scraper captures data from
-doge.gov/savings. It relies on `<code>rvest</code> and reads
-dynamically-generated scripts. The data is then cleaned, and returned in
-table format.</p>
+<p>This package has two main operations: scraping data from doge.gov,
+and pulling data queries from fpds.gov. The primary functions for each
+are <code><a href="../reference/doge_get_data.html">doge_get_data()</a></code> and <code><a href="../reference/fpds_get_data.html">fpds_get_data()</a></code>,
+respectively. Several convenience functions are provided on top of these
+two.</p>
+<div class="section level2">
+<h2 id="getting-doge-data">Getting DOGE Data<a class="anchor" aria-label="anchor" href="#getting-doge-data"></a>
+</h2>
+<p>As of now, the scraper captures data from doge.gov/savings. It relies
+on `<code>rvest</code> and reads dynamically-generated scripts. The data
+is then cleaned, and returned in table format.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doge_get_data.html">doge_get_data</a></span><span class="op">(</span>verbose<span class="op">=</span><span class="cn">T</span>,saveFile <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Fetching url...</span></span>
@@ -96,11 +98,15 @@ comprised of three dataframes. The key columns for reference are
 <p>If desired, you can save data to an .RDS file by flagging
 <code>saveFile=TRUE</code>, and providing a directory location to the
 <code>saveDir</code> parameter.</p>
-<p>##Getting FPDS Data The <code>contracts</code> table has an
-<code>fpds_link</code> column, allowing the user to click through to the
-relevant entry on fpds.gov. There appear to be inconsistencies.
-Therefore, to assist in validating published data with government data,
-you can use <code><a href="../reference/fpds_get_data.html">fpds_get_data()</a></code> to query the ATOM feed for each
+</div>
+<div class="section level2">
+<h2 id="getting-fpds-data">Getting FPDS Data<a class="anchor" aria-label="anchor" href="#getting-fpds-data"></a>
+</h2>
+<p>The <code>contracts</code> table has an <code>fpds_link</code>
+column, allowing the user to click through to the relevant entry on
+fpds.gov. There appear to be inconsistencies. Therefore, to assist in
+validating published data with government data, you can use
+<code><a href="../reference/fpds_get_data.html">fpds_get_data()</a></code> to query the ATOM feed for each
 contract.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fpds_get_data.html">fpds_get_data</a></span><span class="op">(</span>piid<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9523ZY21P0045"</span>,<span class="st">"9531CB24A0009"</span><span class="op">)</span><span class="op">)</span></span>
@@ -116,16 +122,24 @@ dataframes.</p>
 <p>As a note, to avoid overloading memory, FPDS data is written to a
 <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> location, then merged at the end of the
 function.</p>
-<p>##Updating FPDS Data The data from doge.gov/savings is periodically
-updated. When it is, you can use <code><a href="../reference/fpds_get_new.html">fpds_get_new()</a></code> with the
-new DOGE data, and an existing FPDS data object to identify and query
-only the new additions to the DOGE data. This alleviates unnecessarily
-long queries every time there’s a change on doge.gov/savings.</p>
-<p>#Convenience Functions Two very basic convenience functions are
-available. First, <code>doge_summarise()</code> presents basic
-statistical information about the dataset downloaded from
-doge.gov/savings. Second, <code>fpds_stats</code> lists very basic
-information about the number of rows downloaded from FPDS.</p>
+</div>
+<div class="section level2">
+<h2 id="updating-fpds-data">Updating FPDS Data<a class="anchor" aria-label="anchor" href="#updating-fpds-data"></a>
+</h2>
+<p>The data from doge.gov/savings is periodically updated. When it is,
+you can use <code><a href="../reference/fpds_get_new.html">fpds_get_new()</a></code> with the new DOGE data, and an
+existing FPDS data object to identify and query only the new additions
+to the DOGE data. This alleviates unnecessarily long queries every time
+there’s a change on doge.gov/savings.</p>
+</div>
+<div class="section level2">
+<h2 id="convenience-functions">Convenience Functions<a class="anchor" aria-label="anchor" href="#convenience-functions"></a>
+</h2>
+<p>Two very basic convenience functions are available. First,
+<code>doge_summarise()</code> presents basic statistical information
+about the dataset downloaded from doge.gov/savings. Second,
+<code>fpds_stats</code> lists very basic information about the number of
+rows downloaded from FPDS.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/doge_summarize.html">doge_summarize</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Number of Contracts Entries: 5356 </span></span>
@@ -341,7 +355,9 @@ information about the number of rows downloaded from FPDS.</p>
 <span><span class="co">#&gt; 3 unique award piids     1</span></span>
 <span><span class="co">#&gt; 4   unique idv piids     1</span></span>
 <span><span class="co">#&gt; 5        total piids     2</span></span></code></pre></div>
-  </main>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
