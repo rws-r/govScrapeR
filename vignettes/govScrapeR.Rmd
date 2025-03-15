@@ -23,4 +23,13 @@ Currently, govScrapeR offers two primary functions. The most recent, and useful 
 
 The other functionality captures data from whitehouse.gov/news. If desired, it also integrates with OpenAI to summarize and categorize posts from the website. I am including this, but it's still in somewhat rough shape. 
 
-This project is intended to be open, and to foster greater transparency of government actions. Feel free to fork, expand, port, or suggest improvements
+This project is intended to be open, and to foster greater transparency of government actions. Feel free to fork, expand, port, or suggest improvements.
+
+## Installation
+
+You can install the development version of govScrapeR from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("rws-r/govScrapeR")
+```
