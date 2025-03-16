@@ -12,9 +12,11 @@
 #' @importFrom httr GET
 #' @importFrom httr content
 #' @importFrom httr status_code
+#' @importFrom httr parse_url
 #' @importFrom xml2 xml_find_first
 #' @importFrom xml2 read_xml
 #' @importFrom xml2 xml_ns
+#' @importFrom xml2 xml_attr
 #' @importFrom readr type_convert
 #' @returns A named list, consisting of two dataframes: AWARDS and IDV.
 #' @examples
@@ -26,9 +28,7 @@ fpds_get_data <- function(piid=NULL,
                           return=NULL,
                           verbose=TRUE){
 
-  ## Clear the tmp folder.
-  unlink(paste0("inst/extdata/contracts/tmp/",grep("^tmp",list.files("inst/extdata/contracts/tmp"),value = T)))
-  ## Set chunk counter
+   ## Set chunk counter
   chunk=0
   
   ## For data types down at the bottom.
@@ -36,6 +36,32 @@ fpds_get_data <- function(piid=NULL,
   b <- NULL
   dl <- list(AWARDS=NULL,
              IDV=NULL)
+  
+  fpds_call <- function(piid_val=NULL,
+                        start=NULL){
+    base_url <- "https://www.fpds.gov/ezsearch/search.do?s=FPDS&indexName=awardfull&templateName=1.5.3&q="      
+    params <- piid_val
+    url <- paste0(base_url,params,"&rss=1&feed=atom0.3&start=",start)
+    message(paste0("Trying ",url))
+    
+    # Make the API request to get the XML data
+    response <- GET(url)
+    
+    if(!is.null(return))
+      if(return=="raw")
+        return(response)
+    
+    # Check if the request was successful
+    if(status_code(response) == 200){
+      # Parse the XML response
+      xml_data <- content(response, "text")
+      x <- read_xml(xml_data)
+    } else {
+      print(paste("Failed to retrieve data. HTTP status:", status_code(response)))
+      stop()
+    }
+    return(x)
+  }
   
   if(!is.null(piid)){
     if(!is.null(piid))
@@ -46,41 +72,19 @@ fpds_get_data <- function(piid=NULL,
       if(length(calc)>1)
         message(paste0("Multiple PIIDs supplied. Iteration ",i,"/",length(calc)))
       
-      #if(!is.null(piid[i]))
       piid_val <- paste0("PIID:",piid[i])
-      # #if(!is.null(idv_PIID[i]))
-      # idv_PIID_val <- paste0("idvPIID:",idv_PIID[i])
-      # if(!is.null(contract_type))
-      #   contract_type <- paste0("contractType:",contract_type)
-      # if(!is.null(agency_id))
-      #   agency_id <- paste0("agencyID:",agency_id)
-      # if(!is.null(mod_number))
-      #   mod_number <- paste0("modNumber:",mod_number)
-      # if(!is.null(idv_agency_id))
-      #   idv_agency_id <- paste0("idv_agency_id:",idv_agency_id)
-      base_url <- "https://www.fpds.gov/ezsearch/FEEDS/ATOM?FEEDNAME=PUBLIC&q="
-      params <- piid_val
-      url <- paste0(base_url,params)
       
-      # Make the API request to get the XML data
-      response <- GET(url)
       
-      if(!is.null(return))
-        if(return=="raw")
-          return(response)
-      
-      # Check if the request was successful
-      if(status_code(response) == 200){
-        # Parse the XML response
-        xml_data <- content(response, "text")
-        x <- read_xml(xml_data)
-      } else {
-        print(paste("Failed to retrieve data. HTTP status:", status_code(response)))
-        stop()
-      }
+      x <- fpds_call(piid=piid_val,start=0)
       
       # Set namespace
       ns <- xml_ns(x)
+      
+      ## Check to see if there is pagination
+      pagination <- xml2::xml_find_first(x,".//d1:link[@rel='last']") %>% 
+        xml_attr("href") %>% 
+        parse_url()
+      startn <- as.numeric(pagination$query$start)
       
       # Get award type
       at <- xml2::xml_find_first(x,"//ns1:award",ns=ns)
@@ -96,6 +100,21 @@ fpds_get_data <- function(piid=NULL,
                       piid=piid_val,
                       idv_piid=idv_PIID_val,
                       contract_type=ct)
+
+      ## If there is multiple pagination, run query again and feed in loop to fpds_table
+      if(length(startn)>0){
+        loops <- startn/10
+        for(i in 1:loops){
+          xx <- fpds_call(piid_val=piid_val,start = loops[i]*10)
+          tt <- fpds_table(xx,
+                          ns,
+                          piid=piid_val,
+                          idv_piid=idv_PIID_val,
+                          contract_type=ct)
+          t <- dplyr::bind_rows(t,tt)
+        }
+      }
+      
       
       if(ct=="AWARD"){
         if(is.null(dl$AWARDS)){
