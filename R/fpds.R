@@ -42,7 +42,7 @@ fpds_get_data <- function(piid=NULL,
     base_url <- "https://www.fpds.gov/ezsearch/search.do?s=FPDS&indexName=awardfull&templateName=1.5.3&q="      
     params <- piid_val
     url <- paste0(base_url,params,"&rss=1&feed=atom0.3&start=",start)
-    message(paste0("Trying ",url))
+    #message(paste0("Trying ",url))
     
     # Make the API request to get the XML data
     response <- GET(url)
