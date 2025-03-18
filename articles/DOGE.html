@@ -109,7 +109,10 @@ validating published data with government data, you can use
 contract.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fpds_get_data.html">fpds_get_data</a></span><span class="op">(</span>piid<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9523ZY21P0045"</span>,<span class="st">"9531CB24A0009"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span></span>
+<span><span class="co">#&gt;   |                                                                              |                                                                      |   0%</span></span>
+<span><span class="co">#&gt; Processing 2 PIID values.</span></span>
+<span><span class="co">#&gt;   |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span></span>
+<span><span class="co">#&gt; [1] "Successful iterations: 2  | Failed iterations:  0 \n\nFailed at:"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "AWARDS" "IDV"</span></span></code></pre></div>
 <p>Two types of contracts are identified in DOGE data: awards and IDV.
