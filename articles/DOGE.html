@@ -144,11 +144,11 @@ about the dataset downloaded from doge.gov/savings. Second,
 rows downloaded from FPDS.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/doge_summarize.html">doge_summarize</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Number of Contracts Entries: 5356 </span></span>
-<span><span class="co">#&gt; Number of Leases Entries: 793 </span></span>
-<span><span class="co">#&gt; Number of Grants Entries: 7488 </span></span>
+<span><span class="co">#&gt; Number of Contracts Entries: 5631 </span></span>
+<span><span class="co">#&gt; Number of Leases Entries: 657 </span></span>
+<span><span class="co">#&gt; Number of Grants Entries: 7616 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Max Contract: $1,900,000,000 </span></span>
+<span><span class="co">#&gt; Max Contract: $3,004,719,886 </span></span>
 <span><span class="co">#&gt; Max Lease: $26,357,330 </span></span>
 <span><span class="co">#&gt; Max Grant: $4,000,000,000 </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -158,198 +158,203 @@ rows downloaded from FPDS.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Min Contract Savings: $0 </span></span>
 <span><span class="co">#&gt; Min Lease Savings: $0 </span></span>
-<span><span class="co">#&gt; Min Grant Savings: $0 </span></span>
+<span><span class="co">#&gt; Min Grant Savings: -$3,037.58 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Median Contract Savings: $55,803 </span></span>
-<span><span class="co">#&gt; Median Leases Savings: $171,209 </span></span>
-<span><span class="co">#&gt; Median Grant Savings: $28,012 </span></span>
+<span><span class="co">#&gt; Median Contract Savings: $58,607 </span></span>
+<span><span class="co">#&gt; Median Leases Savings: $144,652 </span></span>
+<span><span class="co">#&gt; Median Grant Savings: $34,959.48 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ------</span></span>
-<span><span class="co">#&gt; Estimated savings are currently $105,000,000,000. The doge.gov/savings website states that approximately 30% of receipts. Posted receipts total $35,074,449,878. Extrapolating, this would suggest we should see $116,914,832,927 in savings. This is a difference of -$11,914,832,927.</span></span>
+<span><span class="co">#&gt; Estimated savings are currently $105,000,000,000. The doge.gov/savings website states that approximately 30% of receipts. Posted receipts total $37,408,387,474. Extrapolating, this would suggest we should see $124,694,624,913 in savings. This is a difference of -$19,694,624,913.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;    Category     Total_Value         Savings</span></span>
-<span><span class="co">#&gt; 1 Contracts $39,093,933,457 $17,965,010,314</span></span>
+<span><span class="co">#&gt; 1 Contracts $46,173,389,538 $19,097,436,799</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   Category Annual_Lease      Savings</span></span>
-<span><span class="co">#&gt; 1   Leases $284,206,242 $489,184,265</span></span>
+<span><span class="co">#&gt; 1   Leases $226,337,703 $349,341,035</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   Category     Total_Value         Savings</span></span>
-<span><span class="co">#&gt; 1   Grants $47,844,772,042 $16,620,255,299</span></span>
+<span><span class="co">#&gt; 1   Grants $49,206,710,945 $17,961,609,640</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [1] "Savings Table"</span></span>
 <span><span class="co">#&gt;    Category         Savings</span></span>
-<span><span class="co">#&gt; 1 Contracts $17,965,010,314</span></span>
-<span><span class="co">#&gt; 2    Leases    $489,184,265</span></span>
-<span><span class="co">#&gt; 3    Grants $16,620,255,299</span></span>
-<span><span class="co">#&gt; 4  Subtotal $35,074,449,878</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 49 × 2</span></span></span>
+<span><span class="co">#&gt; 1 Contracts $19,097,436,799</span></span>
+<span><span class="co">#&gt; 2    Leases    $349,341,035</span></span>
+<span><span class="co">#&gt; 3    Grants $17,961,609,640</span></span>
+<span><span class="co">#&gt; 4  Subtotal $37,408,387,474</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 51 × 2</span></span></span>
 <span><span class="co">#&gt;    agency                                                          total_savings</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> USAID                                                           $11,745,350,…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Department of Treasury                                          $2,186,058,0…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Department of Education                                         $787,351,583 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Department of Veterans Affairs                                  $712,225,029 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Department of Health and Human Services                         $519,579,412 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> General Services Administration                                 $227,057,392 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Department of Homeland Security                                 $225,596,971 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Department of Agriculture                                       $219,180,005 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Department of Labor                                             $187,523,992 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Department of Energy                                            $186,225,779 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Environmental Protection Agency                                 $141,820,859 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> Housing and Urban Development                                   $138,944,271 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> Department of Commerce                                          $132,573,842 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> Department of Justice                                           $97,672,535  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> Department of the Interior                                      $97,381,289  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> USAID                                                           $11,775,537,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Department of Treasury                                          $2,185,520,0…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Department of Homeland Security                                 $829,388,822 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Department of Veterans Affairs                                  $809,081,237 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Department of Education                                         $805,014,461 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Department of Health and Human Services                         $681,357,304 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Department of Agriculture                                       $233,863,934 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> General Services Administration                                 $228,423,740 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Department of Labor                                             $192,015,091 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Department of Energy                                            $186,225,782 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Housing and Urban Development                                   $161,260,270 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> Department of the Interior                                      $144,301,478 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> Environmental Protection Agency                                 $141,820,859 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> Department of Commerce                                          $132,771,469 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> Department of Justice                                           $97,672,694  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> Consumer Financial Protection Bureau                            $86,713,667  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> Department of Transportation                                    $35,979,138  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> Department of State                                             $35,106,578  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> Social Security Administration                                  $34,498,182  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> Office of Personnel Management                                  $29,117,991  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">21</span> National Science Foundation                                     $26,942,459  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">22</span> National Aeronautics and Space Administration                   $26,105,046  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">23</span> Small Business Administration                                   $24,418,117  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">24</span> International Assistance Programs                               $14,486,441  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">25</span> Securities and Exchange Commission                              $10,888,432  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">26</span> Department of Defense                                           $8,547,178   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">27</span> Commodity Futures Trading Commission                            $7,536,949   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">28</span> Federal Communications Commission                               $5,298,582   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">29</span> Institute of Museum And Library Services                        $4,488,076   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">30</span> Nuclear Regulatory Commission                                   $2,576,099   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">31</span> Executive Office of the President                               $2,212,300   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">32</span> Export-Import Bank of the US                                    $1,948,116   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">33</span> Federal Mediation and Conciliation Service                      $729,588     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">34</span> Federal Trade Commission                                        $724,978     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">35</span> International Trade Commission                                  $670,450     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">36</span> Marine Mammal Commission                                        $507,827     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">37</span> Consumer Product Safety Commission                              $240,316     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">38</span> Government Accountability Office                                $197,669     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">39</span> National Endowment for the Humanities                           $150,198     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">40</span> Bureau of Land Management                                       $145,000     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">41</span> National Labor Relations Board                                  $96,000      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">42</span> National Archives and Records Administration                    $74,032      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">43</span> Council of the Inspectors General on Integrity and Efficiency   $24,250      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">44</span> National Transportation Safety Board                            $23,405      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">45</span> Committee for Purchase From People Who Are Blind or Severely D… $21,341      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">46</span> CORPORATION FOR NATIONAL AND COMMUNITY SERVICE                  $0           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">47</span> National Gallery of Art                                         $0           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">48</span> Railroad Retirement Board                                       $0           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">49</span> Surface Transportation Board                                    $0           </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 122 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> US Agency for Global Media                                      $72,839,703  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> Office of Personnel Management                                  $51,962,727  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> Social Security Administration                                  $50,360,182  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> Department of Transportation                                    $45,052,114  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">21</span> Department of State                                             $35,106,578  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">22</span> National Science Foundation                                     $26,942,460  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">23</span> National Aeronautics and Space Administration                   $26,105,045  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">24</span> Small Business Administration                                   $24,418,119  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">25</span> Inter-American Foundation                                       $13,910,094  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">26</span> International Assistance Programs                               $10,911,124  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">27</span> Securities and Exchange Commission                              $10,888,431  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">28</span> Department of Defense                                           $10,124,227  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">29</span> Commodity Futures Trading Commission                            $7,536,950   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">30</span> Federal Communications Commission                               $5,298,582   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">31</span> Institute of Museum And Library Services                        $4,488,075   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">32</span> Nuclear Regulatory Commission                                   $2,576,098   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">33</span> Executive Office of the President                               $2,212,300   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">34</span> Export-Import Bank of the US                                    $1,948,116   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">35</span> Federal Mediation and Conciliation Service                      $729,588     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">36</span> Federal Trade Commission                                        $724,978     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">37</span> International Trade Commission                                  $670,450     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">38</span> Marine Mammal Commission                                        $507,827     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">39</span> National Archives and Records Administration                    $256,514     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">40</span> Consumer Product Safety Commission                              $240,316     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">41</span> Government Accountability Office                                $197,669     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">42</span> National Endowment for the Humanities                           $150,198     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">43</span> Bureau of Land Management                                       $145,000     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">44</span> National Labor Relations Board                                  $96,000      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">45</span> Council of the Inspectors General on Integrity and Efficiency   $24,250      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">46</span> National Transportation Safety Board                            $23,405      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">47</span> Committee for Purchase From People Who Are Blind or Severely D… $21,341      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">48</span> CORPORATION FOR NATIONAL AND COMMUNITY SERVICE                  $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">49</span> National Gallery of Art                                         $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">50</span> Railroad Retirement Board                                       $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">51</span> Surface Transportation Board                                    $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 115 × 2</span></span></span>
 <span><span class="co">#&gt;     agency                                                    total_savings</span></span>
 <span><span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  1</span> <span style="color: #949494;">"</span>INTERNAL REVENUE SERVICE NATIONAL OFFICE<span style="color: #949494;">"</span>                $69,848,795  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  2</span> <span style="color: #949494;">"</span>FOOD AND DRUG ADMINISTRATION<span style="color: #949494;">"</span>                            $29,611,309  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  3</span> <span style="color: #949494;">"</span>NATIONAL PARK SERVICE<span style="color: #949494;">"</span>                                   $22,815,121  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  4</span> <span style="color: #949494;">"</span>FOREST SERVICE<span style="color: #949494;">"</span>                                          $21,926,561  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  5</span> <span style="color: #949494;">"</span>CORPS OF ENGINEERS, CIVIL<span style="color: #949494;">"</span>                               $19,732,427  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  6</span> <span style="color: #949494;">"</span>BUREAU OF RECLAMATION<span style="color: #949494;">"</span>                                   $19,515,974  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  7</span> <span style="color: #949494;">"</span>UNITED STATES FISH AND WILDLIFE SERVICE<span style="color: #949494;">"</span>                 $19,165,739  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  8</span> <span style="color: #949494;">"</span>NATURAL RESOURCES CONSERVATION SERVICE<span style="color: #949494;">"</span>                  $18,782,960  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">  9</span> <span style="color: #949494;">"</span>OFFICE OF U.S. ATTORNEYS<span style="color: #949494;">"</span>                                $18,699,896  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 10</span> <span style="color: #949494;">"</span>SECURITIES AND EXCHANGE COMMISSION<span style="color: #949494;">"</span>                      $17,815,760  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 11</span> <span style="color: #949494;">"</span>GEOLOGICAL SURVEY<span style="color: #949494;">"</span>                                       $17,416,584  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 12</span> <span style="color: #949494;">"</span>SOCIAL SECURITY ADMINISTRATION<span style="color: #949494;">"</span>                          $14,875,143  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 13</span> <span style="color: #949494;">"</span>DEPT OF TREASURY-BUREAU OF THE FISCAL SERVICE<span style="color: #949494;">"</span>           $13,928,447  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 14</span> <span style="color: #949494;">"</span>OFFICE OF THE SECRETARY<span style="color: #949494;">"</span>                                 $12,829,634  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 15</span> <span style="color: #949494;">"</span>BUREAU OF INDIAN AFFAIRS<span style="color: #949494;">"</span>                                $11,147,383  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 16</span> <span style="color: #949494;">"</span>MINE SAFETY HEALTH ADMINISTRATION<span style="color: #949494;">"</span>                       $10,684,721  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 17</span> <span style="color: #949494;">"</span>BUREAU OF LABOR STATISTICS<span style="color: #949494;">"</span>                              $8,204,013   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 18</span> <span style="color: #949494;">"</span>NATIONAL OCEANIC ATMOSPHERIC ADMINISTRATION<span style="color: #949494;">"</span>             $7,168,685   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 19</span> <span style="color: #949494;">"</span>OFFICE OF SURFACE MINING AND REGULATION ENFORCEMENT<span style="color: #949494;">"</span>     $6,898,320   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 20</span> <span style="color: #949494;">"</span>BUREAU OF LAND MANAGEMENT<span style="color: #949494;">"</span>                               $5,662,746   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 21</span> <span style="color: #949494;">"</span>ENVIRONMENTAL PROTECTION AGENCY<span style="color: #949494;">"</span>                         $5,533,747   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 22</span> <span style="color: #949494;">"</span>RURAL HOUSING SERVICE<span style="color: #949494;">"</span>                                   $5,527,852   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 23</span> <span style="color: #949494;">"</span>ANIMAL AND PLANT HEALTH INSPECTION SERVICE<span style="color: #949494;">"</span>              $5,486,983   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 24</span> <span style="color: #949494;">"</span>U.S. AGENCY FOR GLOBAL MEDIA<span style="color: #949494;">"</span>                            $5,317,548   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 25</span> <span style="color: #949494;">"</span>EQUAL EMPLOYMENT OPPORTUNITY COMMISSION<span style="color: #949494;">"</span>                 $4,921,329   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 26</span> <span style="color: #949494;">"</span>BUREAU OF PRISONS<span style="color: #949494;">"</span>                                       $4,760,274   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 27</span> <span style="color: #949494;">"</span>OFFICE OF INSPECTOR GENERAL<span style="color: #949494;">"</span>                             $4,714,488   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 28</span> <span style="color: #949494;">"</span>FEDERAL HIGHWAY ADMINISTRATION<span style="color: #949494;">"</span>                          $4,610,486   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 29</span> <span style="color: #949494;">"</span>BUR OF INDUSTRY &amp; SECURITY<span style="color: #949494;">"</span>                              $4,379,887   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 30</span> <span style="color: #949494;">"</span>DEPARTMENT OF HEALTH &amp; HUMAN SERVICES<span style="color: #949494;">"</span>                   $4,309,403   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 31</span> <span style="color: #949494;">"</span>SMALL BUSINESS ADMINISTRATION<span style="color: #949494;">"</span>                           $4,304,010   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 32</span> <span style="color: #949494;">"</span>GOVERNMENT ACCOUNTABILITY OFFICE<span style="color: #949494;">"</span>                        $4,148,820   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 33</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE NAVAJO<span style="color: #949494;">"</span>                            $4,078,288   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 34</span> <span style="color: #949494;">"</span>U.S. IMMIGRATION &amp; CUSTOMS ENFORCEMENT (ICE)<span style="color: #949494;">"</span>            $3,793,254   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 35</span> <span style="color: #949494;">"</span>FARM SERVICE AGENCY - COUNTY<span style="color: #949494;">"</span>                            $3,745,277   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 36</span> <span style="color: #949494;">"</span>DEPARTMENT OF EDUCATION<span style="color: #949494;">"</span>                                 $3,523,329   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 37</span> <span style="color: #949494;">"</span>EMPLOYMENT STANDARDS ADMINISTRATION, WAGE AND HOUR DIVI<span style="color: #949494;">"</span> $3,215,014   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 38</span> <span style="color: #949494;">"</span>General Services Administration<span style="color: #949494;">"</span>                         $2,962,791   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 39</span> <span style="color: #949494;">"</span>EMPLOYEE BENEFITS SECURITY ADMIN<span style="color: #949494;">"</span>                        $2,864,956   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 40</span> <span style="color: #949494;">"</span>OCCUPATIONAL SAFETY AND HEALTH ADMINISTRATION<span style="color: #949494;">"</span>           $2,258,163   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 41</span> <span style="color: #949494;">"</span>DEPARTMENTAL MANAGEMENT (IG)<span style="color: #949494;">"</span>                            $2,143,030   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 42</span> <span style="color: #949494;">"</span>CENTER FOR DISEASE CONTROL<span style="color: #949494;">"</span>                              $2,060,883   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 43</span> <span style="color: #949494;">"</span>OFFICE OF NATURAL RESOURCES AND REVENUE<span style="color: #949494;">"</span>                 $1,960,023   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 44</span> <span style="color: #949494;">"</span>UNITED STATES TRUSTEES<span style="color: #949494;">"</span>                                  $1,857,193   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 45</span> <span style="color: #949494;">"</span>FARM SERVICE AGENCY- STATE<span style="color: #949494;">"</span>                              $1,795,795   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 46</span> <span style="color: #949494;">"</span>DOE-CARLSBAD OFFICE<span style="color: #949494;">"</span>                                     $1,756,298   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 47</span> <span style="color: #949494;">"</span>FOOD AND NUTRITION SERVICE (FNS)<span style="color: #949494;">"</span>                        $1,750,964   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 48</span> <span style="color: #949494;">"</span>FEDERAL LABOR RELATIONS AUTHORITY<span style="color: #949494;">"</span>                       $1,712,141   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 49</span> <span style="color: #949494;">"</span>FEDERAL MOTOR CARRIER SAFETY ADMINISTRATION<span style="color: #949494;">"</span>             $1,503,256   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 50</span> <span style="color: #949494;">"</span>NATIONAL LABOR RELATIONS BOARD<span style="color: #949494;">"</span>                          $1,423,403   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 51</span> <span style="color: #949494;">"</span>INTERNATIONAL TRADE ADMINISTRATION<span style="color: #949494;">"</span>                      $1,379,632   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 52</span> <span style="color: #949494;">"</span>FIELD OFFICES<span style="color: #949494;">"</span>                                           $1,150,282   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 53</span> <span style="color: #949494;">"</span>FEDERAL MEDIATION AND CONCILIATION SERVICE<span style="color: #949494;">"</span>              $991,686     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 54</span> <span style="color: #949494;">"</span>RISK MANAGEMENT AGENCY (RMA)<span style="color: #949494;">"</span>                            $964,396     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 55</span> <span style="color: #949494;">"</span>FEDERAL TRANSIT ADMINISTRATION<span style="color: #949494;">"</span>                          $943,641     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 56</span> <span style="color: #949494;">"</span>EXECUTIVE OFFICE FOR IMMIGRATION REVIEW<span style="color: #949494;">"</span>                 $908,161     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 57</span> <span style="color: #949494;">"</span>BUREAU OF MINERALS MANAGEMENT SERVICE<span style="color: #949494;">"</span>                   $879,289     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 58</span> <span style="color: #949494;">"</span>AGRICULTURAL MARKETING SERVICE<span style="color: #949494;">"</span>                          $877,580     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 59</span> <span style="color: #949494;">"</span>NATIONAL ARCHIVES CENTERS<span style="color: #949494;">"</span>                               $780,308     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 60</span> <span style="color: #949494;">"</span>OFFICE OF PERSONNEL MANAGEMENT<span style="color: #949494;">"</span>                          $769,128     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 61</span> <span style="color: #949494;">"</span>FEDERAL AVIATION ADMINISTRATION<span style="color: #949494;">"</span>                         $765,152     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 62</span> <span style="color: #949494;">"</span>RAILROAD RETIREMENT BOARD<span style="color: #949494;">"</span>                               $764,762     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 63</span> <span style="color: #949494;">"</span>FEDERAL COMMUNICATIONS COMMISSION<span style="color: #949494;">"</span>                       $701,037     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 64</span> <span style="color: #949494;">"</span>EMPLOY. STANDARDS ADMIN., OFC OF WORKERS' COMP. PRGMS<span style="color: #949494;">"</span>   $650,722     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 65</span> <span style="color: #949494;">"</span>FEDERAL ENERGY REGULATORY COMMISSION<span style="color: #949494;">"</span>                    $564,920     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 66</span> <span style="color: #949494;">"</span>ALLOWANCE TO FORMER PRESIDENTS<span style="color: #949494;">"</span>                          $544,991     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 67</span> <span style="color: #949494;">"</span>OFFICE OF THE INSPECTOR GENERAL<span style="color: #949494;">"</span>                         $454,704     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 68</span> <span style="color: #949494;">"</span>PIPELINE &amp; HAZARDOUS MATERIALS SAFETY ADMIN (PHMSA)<span style="color: #949494;">"</span>     $422,021     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 69</span> <span style="color: #949494;">"</span>DEFENSE CONTRACT MANAGEMENT AGENCY- LOCAL<span style="color: #949494;">"</span>               $416,078     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 70</span> <span style="color: #949494;">"</span>EMPLOY. STANDARDS ADMIN., OFC OF CONTRACT COMPLIANCE PR<span style="color: #949494;">"</span> $407,276     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 71</span> <span style="color: #949494;">"</span>NATIONAL APPEALS DIVISION<span style="color: #949494;">"</span>                               $354,188     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 72</span> <span style="color: #949494;">"</span>FAS- OFFICE SPAC<span style="color: #949494;">"</span>                                        $319,542     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 73</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-BEMIDJI<span style="color: #949494;">"</span>                           $314,608     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 74</span> <span style="color: #949494;">"</span>ALCOHOL AND TOBACCO TAX AND TRADE BUREAU<span style="color: #949494;">"</span>                $312,252     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 75</span> <span style="color: #949494;">"</span>BUREAU OF THE CENSUS<span style="color: #949494;">"</span>                                    $311,885     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 76</span> <span style="color: #949494;">"</span>FEDERAL RAILROAD ADMINISTRATION<span style="color: #949494;">"</span>                         $273,935     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 77</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-CALIFORNIA<span style="color: #949494;">"</span>                        $249,674     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 78</span> <span style="color: #949494;">"</span>DEFENSE COUNTERINTELLIGENCE AND SECURITY AGENCY – DOD W<span style="color: #949494;">"</span> $225,980     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 79</span> <span style="color: #949494;">"</span>FAS REG 09 MAINTENANCE CONTROL CENTER<span style="color: #949494;">"</span>                   $222,359     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 80</span> <span style="color: #949494;">"</span>SAVANNAH RIVER OPERATIONS OFFICE<span style="color: #949494;">"</span>                        $200,568     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 81</span> <span style="color: #949494;">"</span>PBS<span style="color: #949494;">"</span>                                                     $193,136     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 82</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE -OKLAHOMA<span style="color: #949494;">"</span>                         $189,922     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 83</span> <span style="color: #949494;">"</span>PUBLIC BUILDINGS SERVICE-FIELD OFFICE<span style="color: #949494;">"</span>                   $164,698     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 84</span> <span style="color: #949494;">"</span>DEPARTMENT OF HOUSING AND URBAN DEVELOPMENT<span style="color: #949494;">"</span>             $161,570     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 85</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-PHOENIX<span style="color: #949494;">"</span>                           $148,264     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 86</span> <span style="color: #949494;">"</span>OFFICE OF LABOR MANAGEMENT STANDARDS<span style="color: #949494;">"</span>                    $145,145     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 87</span> <span style="color: #949494;">"</span>FOOD SAFETY AND INSPECTION SERVICE<span style="color: #949494;">"</span>                      $144,159     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 88</span> <span style="color: #949494;">"</span>OFFICE OF ADMINISTRATIVE LAW JUDGES<span style="color: #949494;">"</span>                     $104,330     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 89</span> <span style="color: #949494;">"</span>FEDERAL TRADE COMMISSION<span style="color: #949494;">"</span>                                $85,762      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 90</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-NASHVILLE<span style="color: #949494;">"</span>                         $85,677      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 91</span> <span style="color: #949494;">"</span>DEPARTMENT OF LABOR<span style="color: #949494;">"</span>                                     $79,567      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 92</span> <span style="color: #949494;">""</span>                                                        $78,417      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 93</span> <span style="color: #949494;">"</span>EMPLOY. AND TRAIN. ADMIN., BUR. OF APPRENTICESHIP AND T<span style="color: #949494;">"</span> $68,638      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 94</span> <span style="color: #949494;">"</span>DRUG ENFORCEMENT ADMINISTRATION<span style="color: #949494;">"</span>                         $67,470      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 95</span> <span style="color: #949494;">"</span>FED ACQUISITION SRVC, REG 05 FLEET MGMT FACILITIES<span style="color: #949494;">"</span>      $48,517      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 96</span> <span style="color: #949494;">"</span>IG FOR TAX ADMINISTRATION<span style="color: #949494;">"</span>                               $40,826      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 97</span> <span style="color: #949494;">"</span>FED ACQUISITION SRVC REG 04, FLEET MGMT FACILITIES<span style="color: #949494;">"</span>      $25,614      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 98</span> <span style="color: #949494;">"</span>FAS, REG 01 FLEET MANAGEMENT FACILITIES<span style="color: #949494;">"</span>                 $23,100      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 99</span> <span style="color: #949494;">"</span>MARITIME ADMINISTRATION<span style="color: #949494;">"</span>                                 $16,555      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">100</span> <span style="color: #949494;">"</span>UNITED STATES MARSHALS SERVICE<span style="color: #949494;">"</span>                          $16,149      </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  1</span> <span style="color: #949494;">"</span>INTERNAL REVENUE SERVICE NATIONAL OFFICE<span style="color: #949494;">"</span>                $42,938,879  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  2</span> <span style="color: #949494;">"</span>FOREST SERVICE<span style="color: #949494;">"</span>                                          $21,926,561  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  3</span> <span style="color: #949494;">"</span>NATIONAL PARK SERVICE<span style="color: #949494;">"</span>                                   $21,007,075  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  4</span> <span style="color: #949494;">"</span>BUREAU OF RECLAMATION<span style="color: #949494;">"</span>                                   $19,515,974  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  5</span> <span style="color: #949494;">"</span>UNITED STATES FISH AND WILDLIFE SERVICE<span style="color: #949494;">"</span>                 $19,031,691  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  6</span> <span style="color: #949494;">"</span>SECURITIES AND EXCHANGE COMMISSION<span style="color: #949494;">"</span>                      $17,815,760  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  7</span> <span style="color: #949494;">"</span>GEOLOGICAL SURVEY<span style="color: #949494;">"</span>                                       $15,207,379  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  8</span> <span style="color: #949494;">"</span>OFFICE OF THE SECRETARY<span style="color: #949494;">"</span>                                 $12,829,634  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">  9</span> <span style="color: #949494;">"</span>NATURAL RESOURCES CONSERVATION SERVICE<span style="color: #949494;">"</span>                  $11,844,252  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 10</span> <span style="color: #949494;">"</span>BUREAU OF INDIAN AFFAIRS<span style="color: #949494;">"</span>                                $10,826,335  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 11</span> <span style="color: #949494;">"</span>MINE SAFETY HEALTH ADMINISTRATION<span style="color: #949494;">"</span>                       $10,684,721  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 12</span> <span style="color: #949494;">"</span>FOOD AND DRUG ADMINISTRATION<span style="color: #949494;">"</span>                            $9,970,928   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 13</span> <span style="color: #949494;">"</span>BUREAU OF LABOR STATISTICS<span style="color: #949494;">"</span>                              $8,204,013   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 14</span> <span style="color: #949494;">"</span>OFFICE OF SURFACE MINING AND REGULATION ENFORCEMENT<span style="color: #949494;">"</span>     $6,898,320   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 15</span> <span style="color: #949494;">"</span>ENVIRONMENTAL PROTECTION AGENCY<span style="color: #949494;">"</span>                         $5,533,747   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 16</span> <span style="color: #949494;">"</span>ANIMAL AND PLANT HEALTH INSPECTION SERVICE<span style="color: #949494;">"</span>              $5,372,782   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 17</span> <span style="color: #949494;">"</span>U.S. AGENCY FOR GLOBAL MEDIA<span style="color: #949494;">"</span>                            $5,317,548   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 18</span> <span style="color: #949494;">"</span>RURAL HOUSING SERVICE<span style="color: #949494;">"</span>                                   $5,060,747   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 19</span> <span style="color: #949494;">"</span>EQUAL EMPLOYMENT OPPORTUNITY COMMISSION<span style="color: #949494;">"</span>                 $4,921,329   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 20</span> <span style="color: #949494;">"</span>BUREAU OF PRISONS<span style="color: #949494;">"</span>                                       $4,760,274   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 21</span> <span style="color: #949494;">"</span>OFFICE OF INSPECTOR GENERAL<span style="color: #949494;">"</span>                             $4,714,488   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 22</span> <span style="color: #949494;">"</span>FEDERAL HIGHWAY ADMINISTRATION<span style="color: #949494;">"</span>                          $4,401,798   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 23</span> <span style="color: #949494;">"</span>BUR OF INDUSTRY &amp; SECURITY<span style="color: #949494;">"</span>                              $4,379,887   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 24</span> <span style="color: #949494;">"</span>DEPARTMENT OF HEALTH &amp; HUMAN SERVICES<span style="color: #949494;">"</span>                   $4,309,403   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 25</span> <span style="color: #949494;">"</span>DEPT OF TREASURY-BUREAU OF THE FISCAL SERVICE<span style="color: #949494;">"</span>           $4,239,635   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 26</span> <span style="color: #949494;">"</span>U.S. IMMIGRATION &amp; CUSTOMS ENFORCEMENT (ICE)<span style="color: #949494;">"</span>            $3,793,254   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 27</span> <span style="color: #949494;">"</span>FARM SERVICE AGENCY - COUNTY<span style="color: #949494;">"</span>                            $3,745,277   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 28</span> <span style="color: #949494;">"</span>SMALL BUSINESS ADMINISTRATION<span style="color: #949494;">"</span>                           $3,736,686   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 29</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE NAVAJO<span style="color: #949494;">"</span>                            $3,630,400   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 30</span> <span style="color: #949494;">"</span>EMPLOYMENT STANDARDS ADMINISTRATION, WAGE AND HOUR DIVI<span style="color: #949494;">"</span> $3,215,014   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 31</span> <span style="color: #949494;">"</span>General Services Administration<span style="color: #949494;">"</span>                         $2,962,791   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 32</span> <span style="color: #949494;">"</span>NATIONAL OCEANIC ATMOSPHERIC ADMINISTRATION<span style="color: #949494;">"</span>             $2,952,312   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 33</span> <span style="color: #949494;">"</span>EMPLOYEE BENEFITS SECURITY ADMIN<span style="color: #949494;">"</span>                        $2,864,956   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 34</span> <span style="color: #949494;">"</span>DEPARTMENT OF EDUCATION<span style="color: #949494;">"</span>                                 $2,671,028   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 35</span> <span style="color: #949494;">"</span>OCCUPATIONAL SAFETY AND HEALTH ADMINISTRATION<span style="color: #949494;">"</span>           $2,258,163   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 36</span> <span style="color: #949494;">"</span>DEPARTMENTAL MANAGEMENT (IG)<span style="color: #949494;">"</span>                            $2,143,030   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 37</span> <span style="color: #949494;">"</span>CENTER FOR DISEASE CONTROL<span style="color: #949494;">"</span>                              $2,060,883   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 38</span> <span style="color: #949494;">"</span>OFFICE OF NATURAL RESOURCES AND REVENUE<span style="color: #949494;">"</span>                 $1,960,023   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 39</span> <span style="color: #949494;">"</span>CORPS OF ENGINEERS, CIVIL<span style="color: #949494;">"</span>                               $1,930,906   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 40</span> <span style="color: #949494;">"</span>FARM SERVICE AGENCY- STATE<span style="color: #949494;">"</span>                              $1,795,795   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 41</span> <span style="color: #949494;">"</span>FOOD AND NUTRITION SERVICE (FNS)<span style="color: #949494;">"</span>                        $1,750,964   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 42</span> <span style="color: #949494;">"</span>SOCIAL SECURITY ADMINISTRATION<span style="color: #949494;">"</span>                          $1,687,330   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 43</span> <span style="color: #949494;">"</span>FEDERAL MOTOR CARRIER SAFETY ADMINISTRATION<span style="color: #949494;">"</span>             $1,503,256   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 44</span> <span style="color: #949494;">"</span>NATIONAL LABOR RELATIONS BOARD<span style="color: #949494;">"</span>                          $1,423,403   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 45</span> <span style="color: #949494;">"</span>INTERNATIONAL TRADE ADMINISTRATION<span style="color: #949494;">"</span>                      $1,379,632   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 46</span> <span style="color: #949494;">"</span>UNITED STATES TRUSTEES<span style="color: #949494;">"</span>                                  $1,224,664   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 47</span> <span style="color: #949494;">"</span>FIELD OFFICES<span style="color: #949494;">"</span>                                           $1,150,282   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 48</span> <span style="color: #949494;">"</span>FEDERAL MEDIATION AND CONCILIATION SERVICE<span style="color: #949494;">"</span>              $991,686     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 49</span> <span style="color: #949494;">"</span>RISK MANAGEMENT AGENCY (RMA)<span style="color: #949494;">"</span>                            $964,396     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 50</span> <span style="color: #949494;">"</span>GOVERNMENT ACCOUNTABILITY OFFICE<span style="color: #949494;">"</span>                        $946,460     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 51</span> <span style="color: #949494;">"</span>FEDERAL TRANSIT ADMINISTRATION<span style="color: #949494;">"</span>                          $943,641     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 52</span> <span style="color: #949494;">"</span>BUREAU OF MINERALS MANAGEMENT SERVICE<span style="color: #949494;">"</span>                   $879,289     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 53</span> <span style="color: #949494;">"</span>BUREAU OF LAND MANAGEMENT<span style="color: #949494;">"</span>                               $819,743     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 54</span> <span style="color: #949494;">"</span>NATIONAL ARCHIVES CENTERS<span style="color: #949494;">"</span>                               $780,308     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 55</span> <span style="color: #949494;">"</span>AGRICULTURAL MARKETING SERVICE<span style="color: #949494;">"</span>                          $771,832     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 56</span> <span style="color: #949494;">"</span>RAILROAD RETIREMENT BOARD<span style="color: #949494;">"</span>                               $764,762     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 57</span> <span style="color: #949494;">"</span>FEDERAL COMMUNICATIONS COMMISSION<span style="color: #949494;">"</span>                       $701,037     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 58</span> <span style="color: #949494;">"</span>EMPLOY. STANDARDS ADMIN., OFC OF WORKERS' COMP. PRGMS<span style="color: #949494;">"</span>   $650,722     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 59</span> <span style="color: #949494;">"</span>FEDERAL ENERGY REGULATORY COMMISSION<span style="color: #949494;">"</span>                    $564,920     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 60</span> <span style="color: #949494;">"</span>ALLOWANCE TO FORMER PRESIDENTS<span style="color: #949494;">"</span>                          $544,991     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 61</span> <span style="color: #949494;">"</span>PIPELINE &amp; HAZARDOUS MATERIALS SAFETY ADMIN (PHMSA)<span style="color: #949494;">"</span>     $422,021     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 62</span> <span style="color: #949494;">"</span>EMPLOY. STANDARDS ADMIN., OFC OF CONTRACT COMPLIANCE PR<span style="color: #949494;">"</span> $407,276     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 63</span> <span style="color: #949494;">"</span>OFFICE OF THE INSPECTOR GENERAL<span style="color: #949494;">"</span>                         $365,815     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 64</span> <span style="color: #949494;">"</span>NATIONAL APPEALS DIVISION<span style="color: #949494;">"</span>                               $354,188     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 65</span> <span style="color: #949494;">"</span>FAS- OFFICE SPAC<span style="color: #949494;">"</span>                                        $319,542     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 66</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-BEMIDJI<span style="color: #949494;">"</span>                           $314,608     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 67</span> <span style="color: #949494;">"</span>ALCOHOL AND TOBACCO TAX AND TRADE BUREAU<span style="color: #949494;">"</span>                $312,252     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 68</span> <span style="color: #949494;">"</span>BUREAU OF THE CENSUS<span style="color: #949494;">"</span>                                    $311,885     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 69</span> <span style="color: #949494;">"</span>FEDERAL RAILROAD ADMINISTRATION<span style="color: #949494;">"</span>                         $273,935     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 70</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-CALIFORNIA<span style="color: #949494;">"</span>                        $249,674     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 71</span> <span style="color: #949494;">"</span>FAS REG 09 MAINTENANCE CONTROL CENTER<span style="color: #949494;">"</span>                   $222,359     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 72</span> <span style="color: #949494;">"</span>SAVANNAH RIVER OPERATIONS OFFICE<span style="color: #949494;">"</span>                        $200,568     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 73</span> <span style="color: #949494;">"</span>PBS<span style="color: #949494;">"</span>                                                     $193,136     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 74</span> <span style="color: #949494;">"</span>PUBLIC BUILDINGS SERVICE-FIELD OFFICE<span style="color: #949494;">"</span>                   $164,698     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 75</span> <span style="color: #949494;">"</span>DEPARTMENT OF HOUSING AND URBAN DEVELOPMENT<span style="color: #949494;">"</span>             $161,570     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 76</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-PHOENIX<span style="color: #949494;">"</span>                           $148,264     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 77</span> <span style="color: #949494;">"</span>OFFICE OF LABOR MANAGEMENT STANDARDS<span style="color: #949494;">"</span>                    $145,145     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 78</span> <span style="color: #949494;">"</span>FOOD SAFETY AND INSPECTION SERVICE<span style="color: #949494;">"</span>                      $144,159     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 79</span> <span style="color: #949494;">"</span>OFFICE OF ADMINISTRATIVE LAW JUDGES<span style="color: #949494;">"</span>                     $104,330     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 80</span> <span style="color: #949494;">"</span>FEDERAL TRADE COMMISSION<span style="color: #949494;">"</span>                                $85,762      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 81</span> <span style="color: #949494;">"</span>INDIAN HEALTH SERVICE-NASHVILLE<span style="color: #949494;">"</span>                         $85,677      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 82</span> <span style="color: #949494;">"</span>DEPARTMENT OF LABOR<span style="color: #949494;">"</span>                                     $79,567      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 83</span> <span style="color: #949494;">""</span>                                                        $78,417      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 84</span> <span style="color: #949494;">"</span>EMPLOY. AND TRAIN. ADMIN., BUR. OF APPRENTICESHIP AND T<span style="color: #949494;">"</span> $68,638      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 85</span> <span style="color: #949494;">"</span>DRUG ENFORCEMENT ADMINISTRATION<span style="color: #949494;">"</span>                         $67,470      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 86</span> <span style="color: #949494;">"</span>FED ACQUISITION SRVC, REG 05 FLEET MGMT FACILITIES<span style="color: #949494;">"</span>      $48,517      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 87</span> <span style="color: #949494;">"</span>FED ACQUISITION SRVC REG 04, FLEET MGMT FACILITIES<span style="color: #949494;">"</span>      $25,614      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 88</span> <span style="color: #949494;">"</span>FAS, REG 01 FLEET MANAGEMENT FACILITIES<span style="color: #949494;">"</span>                 $23,100      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 89</span> <span style="color: #949494;">"</span>OFFICE OF PERSONNEL MANAGEMENT<span style="color: #949494;">"</span>                          $19,355      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 90</span> <span style="color: #949494;">"</span>MARITIME ADMINISTRATION<span style="color: #949494;">"</span>                                 $16,555      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 91</span> <span style="color: #949494;">"</span>UNITED STATES MARSHALS SERVICE<span style="color: #949494;">"</span>                          $16,149      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 92</span> <span style="color: #949494;">"</span>DEPARTMENT OF STATE<span style="color: #949494;">"</span>                                     $7,383       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 93</span> <span style="color: #949494;">"</span>DEFENSE COUNTERINTELLIGENCE AND SECURITY AGENCY – DOD W<span style="color: #949494;">"</span> $6,904       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 94</span> <span style="color: #949494;">"</span>VETERANS BENEFITS ADMINISTRATION<span style="color: #949494;">"</span>                        $6,777       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 95</span> <span style="color: #949494;">"</span>DEFENSE CONTRACT MANAGEMENT AGENCY- NATIONAL<span style="color: #949494;">"</span>            $6,067       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 96</span> <span style="color: #949494;">"</span>DHS UNITED STATES SECRET SERVICE<span style="color: #949494;">"</span>                        $4,142       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 97</span> <span style="color: #949494;">"</span>FAS, REG 08 FLEET MANAGEMENT FACILITIES<span style="color: #949494;">"</span>                 $2,520       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 98</span> <span style="color: #949494;">"</span>BANKRUPTCY CLERK<span style="color: #949494;">"</span>                                        $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 99</span> <span style="color: #949494;">"</span>BORDER PATROL FACILITIES<span style="color: #949494;">"</span>                                $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">100</span> <span style="color: #949494;">"</span>BUR OF ALCOHOL,TOBACCO,FIREARMS &amp; EXPLOSIVES<span style="color: #949494;">"</span>            $0           </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 15 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 2</span></span></span>
 <span><span class="co">#&gt;   agency                                  total_savings  </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> USAID                                   $13,527,248,228</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Department of State                     $1,893,523,686 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Department Of Education                 $780,289,279   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Department of Health and Human Services $215,679,518   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Environmental Protection Agency         $178,165,240   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> International Assistance Programs       $25,349,348</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Department of State                     $1,893,520,648 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Department of Agriculture               $957,502,433   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Department Of Education                 $780,289,279   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> US Agency for Global Media              $346,899,923   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Department of Health and Human Services $219,767,788   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Environmental Protection Agency         $178,165,240   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Deparment of Labor                      $32,866,752    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> International Assistance Programs       $25,349,348</span></span>
 <span><span class="fu"><a href="../reference/fpds_stats.html">fpds_stats</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                 Stat Value</span></span>
 <span><span class="co">#&gt; 1        nrow awards     5</span></span>
