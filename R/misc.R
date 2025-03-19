@@ -1042,5 +1042,165 @@ create_vendor_lookup <- function(DOGE,FPDS) {
 
 }
 
+##--------Legacy usaspending --------
 
+library(httr)
+library(jsonlite)
+
+
+
+match_agencies <- function(agencies=NULL,
+                           agency_name=NULL){
+  
+  agencies <- get_agencies()
+  
+  if(!is.null(agency_name)){
+    r <- which(agencies$agency_name==agency_name | agencies$abbreviation==agency_name)
+    toptier_code <- as.numeric(agencies[r,"toptier_code"])
+  }else{
+    r <- which(agencies$agency_id==agencies | agencies$toptier_code==agencies)
+    toptier_code <- as.numeric(agencies[r,"toptier_code"])
+  }
+  return(toptier_code)
+}
+
+generate_unique_key <- function(unique_key=NULL,
+                                award_id=NULL,
+                                toptier_code=NULL,
+                                award_type=NULL){
+
+  if(is.numeric(toptier_code))
+    sprintf("%04d",toptier_code)
+  if(is.null(unique_key)){
+    if(!is.null(award_id) & !is.null(toptier_code)){
+      if(award_type=="grant")
+        pref <- "ASST_NON_"
+      else if(award_type=="contract")
+        pref <- "CONT_AWD_"
+      else if(award_type=="IDV")
+        pref <- "CONT_IDV_"
+      else
+        stop("Invalid award_type")
+      unique_award_id <- paste0(pref,award_id,"_",toptier_code)
+      B <- unique_award_id
+    }
+  }else{
+    B <- unique_key
+  }
+  return(B)
+}
+
+us.api <- function(A=NULL,
+                   B=NULL,
+                   C=NULL,
+                   D=NULL,
+                   agency_code=NULL,
+                   agency_name=NULL,
+                   type="GET",
+                   clean=TRUE,
+                   award_id_fain=NULL,
+                   award_agency_val=NULL,
+                   award_type="grant",
+                   unique_key=NULL,
+                   agencies=NULL){
+  
+  if(is.null(unique_key))
+    toptier_code <- match_agencies(agencies=agencies,
+                                   agency_name=agency_name)
+
+  B <- generate_unique_key(unique_key=unique_key,
+                           award_id = award_id_fain,
+                           toptier_code = toptier_code,
+                           award_type = award_type)
+  
+  
+  # Define the base URL
+  url <- "https://api.usaspending.gov/api/v2/"
+  url <- paste0(url,A)
+  if(!is.null(agency_code))
+    url <- paste0(url,"/",sprintf("%03d",agency_code))
+  if(!is.null(B))
+    url <- paste0(url,"/",B)
+  if(!is.null(C))
+    url <- paste0(url,"/",C)
+  if(!is.null(D))
+    url <- paste0(url,"/",D)
+  url <- paste0(url,"/")
+  
+  message(paste0("Trying url for: ",url))
+  # Make a GET request
+  if(type=="GET")
+    response <- GET(url)
+  else
+    response <- POST(url)
+  
+  # Check response status
+  if (status_code(response) == 200) {
+    data <- content(response, "text")
+    parsed_data <- fromJSON(data, flatten = TRUE)
+    # parsed_data <- as.data.frame(parsed_data)
+    if(clean==TRUE)
+      return(json_cleaner(parsed_data))
+    else
+      return(parsed_data)
+  } else {
+    data <- content(response, "text")
+    parsed_data <- fromJSON(data, flatten = TRUE)
+    print(paste0("ERROR ",status_code(response),": ",parsed_data$detail))
+  }
+}
+
+get_agencies <- function(clean=F){
+  url <- "https://api.usaspending.gov/api/v2/references/toptier_agencies/"
+  response <- GET(url)
+  # Check response status
+  if (status_code(response) == 200) {
+    data <- content(response, "text")
+    parsed_data <- fromJSON(data, flatten = TRUE)
+    parsed_data <- as.data.frame(parsed_data$results)
+    # parsed_data <- as.data.frame(parsed_data)
+    return(parsed_data)
+  } else {
+    print(paste("Error:", status_code(response)))
+  }
+  
+}
+json_cleaner <- function(data, parent_key = "") {
+  result <- list()
+  
+  for (i in seq_along(data)) {
+    key <- names(data)[i]
+    if (is.null(key) || key == "") key <- paste0("V", i)  # Handle unnamed lists
+    
+    full_key <- ifelse(parent_key == "", key, paste0(parent_key, ".", key))
+    value <- data[[i]]
+    
+    if (is.atomic(value)) {
+      if(length(value)==1){
+        # Store single values
+        result[[full_key]] <- value
+      }else{
+        result[[full_key]] <- paste0(value,collapse=",")
+      }
+    } else if (is.null(value)) {
+      # Store NULLs as NA
+      result[[full_key]] <- NA
+    } else if (is.data.frame(value)) {
+      # Flatten if it's a single-row DataFrame, otherwise nest
+      if (nrow(value) > 1) {
+        result[[full_key]] <- list(as_tibble(value))  # Nest if >1 row
+      } else {
+        result <- append(result, as.list(value))  # Flatten if 1 row
+      }
+    } else if (is.list(value)) {
+      # Recursively process nested lists
+      nested <- json_cleaner(value, full_key)
+      result <- append(result, nested)
+    }  else {
+      stop("Unexpected data type")
+    }
+  }
+  
+  return(as_tibble(result, .name_repair = "unique"))  # Ensures unique column names
+}
   

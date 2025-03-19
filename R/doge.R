@@ -34,6 +34,7 @@ doge_get_data <- function(verbose=TRUE,
   
   if(verbose==TRUE)message("Capturing elements...")
   scripts <- page %>% rvest::html_nodes("script") %>% rvest::html_text()
+
   ## Cut out final function scripts
   scripts <- scripts[-length(scripts)]
   ## Get NAs out.
@@ -42,22 +43,25 @@ doge_get_data <- function(verbose=TRUE,
   if(verbose==TRUE)message("Cleaning raw data...")
   scripts <- paste(scripts,collapse="")
   scripts <- stringr::str_extract(scripts, '\\\\"receipts\\\\\\":.*')
-  
+
   ## Get some data cleaning done, based on the garbage provided.
   scripts <- gsub("\\\"]\\)self\\.\\_\\_next\\_f\\.push\\(\\[1,\\\"","",scripts)
   scripts <- gsub("\\\\\\\"", "\"", scripts)  # Replace \\" with "
   scripts <- gsub("\\\\\\\\", "\\\\", scripts)  # Replace \\ with \
-  scripts <- substr(scripts,1,nchar(scripts)-8)
-  scripts <- paste0("{",scripts,"}")
+
+   #scripts <- substr(scripts,1,nchar(scripts)-8)
   
   if(verbose==TRUE)message("Checking brackets...")
   ## Check for sections related to brackets. 
   t <- check_bracket_mismatch(scripts)
-  
+
   ## Clean up
-  pos <- t[t$sq==0,"pos"]
+  pos <- t[t$sq==0 & t$cu==0,"pos"]
+
   scripts <- substr(scripts,1,pos)
   
+  scripts <- paste0("{",scripts)
+
   ## Convert to json
   if(verbose==TRUE)message("Converting to JSON...")
   scripts <- jsonlite::fromJSON(scripts,flatten = T)
