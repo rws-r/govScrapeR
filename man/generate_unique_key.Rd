@@ -29,6 +29,6 @@ A utility function to generate a unique key as used at usaspending.gov.
 }
 \examples{
 \dontrun{
-generate_unique_key(award_id="XXX999333",toptier_code="0900",award_type="grant")
+generate_unique_key(PIID="XXX999333",toptier_code="0900",award_type="grant")
 }
 }

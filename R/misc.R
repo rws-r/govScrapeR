@@ -1077,7 +1077,7 @@ match_agencies <- function(agencies=NULL,
 #'
 #' @examples 
 #' \dontrun{
-#' generate_unique_key(award_id="XXX999333",toptier_code="0900",award_type="grant")
+#' generate_unique_key(PIID="XXX999333",toptier_code="0900",award_type="grant")
 #' }
 generate_unique_key <- function(unique_key=NULL,
                                 PIID=NULL,
