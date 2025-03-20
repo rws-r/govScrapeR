@@ -1080,14 +1080,18 @@ match_agencies <- function(agencies=NULL,
 #' generate_unique_key(award_id="XXX999333",toptier_code="0900",award_type="grant")
 #' }
 generate_unique_key <- function(unique_key=NULL,
-                                award_id=NULL,
+                                PIID=NULL,
                                 toptier_code=NULL,
-                                award_type=NULL){
+                                award_type=NULL,
+                                idvPIID=NULL){
 
+  if(is.null(idvPIID))
+    idvPIID <- "_-NONE-_-NONE-"
+  
   if(is.numeric(toptier_code))
     sprintf("%04d",toptier_code)
   if(is.null(unique_key)){
-    if(!is.null(award_id) & !is.null(toptier_code)){
+    if(!is.null(PIID) & !is.null(toptier_code)){
       if(award_type=="grant")
         pref <- "ASST_NON_"
       else if(award_type=="contract")
@@ -1096,7 +1100,7 @@ generate_unique_key <- function(unique_key=NULL,
         pref <- "CONT_IDV_"
       else
         stop("Invalid award_type")
-      unique_award_id <- paste0(pref,award_id,"_",toptier_code)
+      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID)
       B <- unique_award_id
     }
   }else{
