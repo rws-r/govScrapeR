@@ -1083,7 +1083,8 @@ generate_unique_key <- function(unique_key=NULL,
                                 PIID=NULL,
                                 toptier_code=NULL,
                                 award_type=NULL,
-                                idvPIID=NULL){
+                                idvPIID=NULL,
+                                idvAgency=NULL){
 
   if(is.null(idvPIID))
     idvPIID <- "_-NONE-_-NONE-"
@@ -1100,7 +1101,7 @@ generate_unique_key <- function(unique_key=NULL,
         pref <- "CONT_IDV_"
       else
         stop("Invalid award_type")
-      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID)
+      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,"_",idvAgency)
       B <- unique_award_id
     }
   }else{

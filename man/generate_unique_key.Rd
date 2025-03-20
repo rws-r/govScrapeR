@@ -9,7 +9,8 @@ generate_unique_key(
   PIID = NULL,
   toptier_code = NULL,
   award_type = NULL,
-  idvPIID = NULL
+  idvPIID = NULL,
+  idvAgency = NULL
 )
 }
 \arguments{
