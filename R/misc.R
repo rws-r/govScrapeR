@@ -1064,6 +1064,21 @@ match_agencies <- function(agencies=NULL,
   return(toptier_code)
 }
 
+#' generate_unique_key
+#' 
+#' A utility function to generate a unique key as used at usaspending.gov.
+#'
+#' @param unique_key A supplied unique key
+#' @param award_id A PIID number
+#' @param toptier_code An agency code
+#' @param award_type Either "contract","grant","IDV"
+#'
+#' @returns A character string
+#'
+#' @examples 
+#' \dontrun{
+#' generate_unique_key(award_id="XXX999333",toptier_code="0900",award_type="grant")
+#' }
 generate_unique_key <- function(unique_key=NULL,
                                 award_id=NULL,
                                 toptier_code=NULL,
