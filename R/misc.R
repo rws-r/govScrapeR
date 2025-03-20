@@ -1086,13 +1086,26 @@ generate_unique_key <- function(unique_key=NULL,
                                 idvPIID=NULL,
                                 idvAgency=NULL){
 
-  if(is.null(idvPIID))
-    idvPIID <- "_-NONE-_-NONE-"
   
+  if (is.null(idvPIID) || is.na(idvPIID) || idvPIID == "NA") {
+    idvPIID <- "_-NONE-_-NONE-"
+  } else {
+    idvPIID <- paste0("_", idvPIID)
+  }
+  
+  
+  if (is.null(idvAgency) || is.na(idvAgency) || idvAgency == "NA") {
+    idvAgency <- NULL
+  } else {
+    idvAgency <- paste0("_", idvAgency)
+  }
+
   if(is.numeric(toptier_code))
     sprintf("%04d",toptier_code)
   if(is.null(unique_key)){
     if(!is.null(PIID) & !is.null(toptier_code)){
+      if(is.null(award_type))
+        stop("Error: award_type must be supplied.")
       if(award_type=="grant")
         pref <- "ASST_NON_"
       else if(award_type=="contract")
@@ -1101,7 +1114,7 @@ generate_unique_key <- function(unique_key=NULL,
         pref <- "CONT_IDV_"
       else
         stop("Invalid award_type")
-      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,"_",idvAgency)
+      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,idvAgency)
       B <- unique_award_id
     }
   }else{
