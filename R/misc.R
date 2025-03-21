@@ -294,30 +294,34 @@ check_bracket_mismatch <- function(json_string) {
 #' extract_url_components(df)
 #' }
 #' 
-extract_url_components <- function(data=NULL,
-                                   url_col="fpds_link",
-                                   link=NULL){
-  if(!is.null(link)){
-    links <- link
-  }else{
-    links <- data[,url_col]
-  }
-  for(i in 1:length(links)){
-    args <- strsplit(links[i],"\\?")[[1]][2]
-    elements <- strsplit(args,"&")[[1]]
-    vals <- strsplit(elements,"=")
-    if(i==1)
-      x <- as.data.frame(matrix(NA,ncol = length(vals)))
-    for(j in 1:length(vals)){
-      x[1,j] <- vals[[j]][2]
-      colnames(x)[j] <- vals[[j]][1]
+extract_url_components <- function(data=NULL){
+  
+  # Use lapply() to parse the URLs and extract the query components
+  parsed_urls <- lapply(data$fpds_link, function(x){
+    if(is.null(x) || is.na(x)) {
+      # If URL is NULL or NA, return a data frame with NA values
+      return(setNames(data.frame(matrix(NA, nrow = 1, ncol = 6)), c("agencyID", "PIID", "modNumber", "idvAgencyID", "idvPIID", "contractType"))
+)
+    } else {
+      # Parse URL and extract query components
+      q <- parse_url(x)
+      q <- q$query
+      if (is.null(q)) {
+        # If no query part in the URL, return NA for each field
+        return(setNames(data.frame(matrix(NA, nrow = 1, ncol = 6)), c("agencyID", "PIID", "modNumber", "idvAgencyID", "idvPIID", "contractType"))
+)
+      }
+      # Convert query components into a data frame
+      q_df <- as.data.frame(q, stringsAsFactors = FALSE)
+      # Ensure column names match the expected output
+      return(q_df)
     }
-    if(i==1)
-      y <- x
-    else
-      y <- suppressMessages(dplyr::bind_rows(y,x))
-  }
-  return(y)
+  })
+  # Bind the list of data frames into a single data frame
+  result_df <- bind_rows(parsed_urls)
+  result_df <- cbind(data,result_df)
+  
+  return(result_df)
 }
 
 #' Load FPDS Fields
@@ -1087,18 +1091,22 @@ generate_unique_key <- function(unique_key=NULL,
                                 idvAgency=NULL){
 
   
-  if (is.null(idvPIID) || is.na(idvPIID) || idvPIID == "NA") {
-    idvPIID <- "_-NONE-_-NONE-"
-  } else {
-    idvPIID <- paste0("_", idvPIID)
-  }
+  idvPIID <- lapply(idvPIID,function(x){
+    if(is.null(x) || is.na(x) || x=="NA"){
+      "_-NONE-_-NONE-"
+    }else{
+      paste0("_",x)
+    }
+  })
   
+  idvAgency <- lapply(idvAgency,function(x){
+    if(is.null(x) || is.na(x) || x=="NA"){
+      NULL
+    }else{
+      paste0("_",x)
+    }
+  })
   
-  if (is.null(idvAgency) || is.na(idvAgency) || idvAgency == "NA") {
-    idvAgency <- NULL
-  } else {
-    idvAgency <- paste0("_", idvAgency)
-  }
 
   if(is.numeric(toptier_code))
     sprintf("%04d",toptier_code)
@@ -1114,7 +1122,10 @@ generate_unique_key <- function(unique_key=NULL,
         pref <- "CONT_IDV_"
       else
         stop("Invalid award_type")
-      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,idvAgency)
+      if(award_type=="IDV")
+        unique_award_id <- paste0(pref,PIID,"_",toptier_code)
+      else
+        unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,idvAgency)
       B <- unique_award_id
     }
   }else{

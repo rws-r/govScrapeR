@@ -27,10 +27,20 @@ doge_get_data <- function(verbose=TRUE,
                           saveFile=FALSE,
                           saveDir=NULL){
 
-  url <- "https://www.doge.gov/savings"
+  url <- "https://doge.gov/savings"
+  
+  custom_headers <- c(
+    `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    `Accept` = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+    `Accept-Encoding` = "gzip, deflate, br",
+    `Accept-Language` = "en-US,en;q=0.9",
+    `Connection` = "keep-alive"
+    )
+
   
   if(verbose==TRUE)message("Fetching url...")
-  page <- rvest::read_html(url)
+  page <- rvest::read_html(GET(url, add_headers(custom_headers)))
+  #page <- rvest::read_html(url)
   
   if(verbose==TRUE)message("Capturing elements...")
   scripts <- page %>% rvest::html_nodes("script") %>% rvest::html_text()
@@ -107,8 +117,7 @@ doge_get_data <- function(verbose=TRUE,
                                                       ceiling_value=as.numeric(ceiling_value),
                                                       value=as.numeric(value)))
   
-  contracts_url_elements <- extract_url_components(contracts)
-  contracts <- cbind(contracts,contracts_url_elements)
+  contracts <- extract_url_components(contracts)
   
   if(verbose==TRUE)message("Building return list...")
   data <- list(contracts=contracts,

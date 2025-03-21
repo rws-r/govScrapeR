@@ -4,7 +4,7 @@
 \alias{extract_url_components}
 \title{Extract URL Components}
 \usage{
-extract_url_components(data = NULL, url_col = "fpds_link", link = NULL)
+extract_url_components(data = NULL)
 }
 \arguments{
 \item{data}{}
