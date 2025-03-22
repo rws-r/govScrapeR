@@ -211,73 +211,155 @@ browser <- function(dataset=NULL,
 }
 
 
+# check_bracket_mismatch <- function(json_string) {
+#   
+#   a <- data.frame(type="{",pos=gregexpr("\\{",json_string)[[1]])
+#   b <- data.frame(type="}",pos=gregexpr("\\}",json_string)[[1]])
+#   c <- data.frame(type="[",pos=gregexpr("\\[",json_string)[[1]])
+#   d <- data.frame(type="]",pos=gregexpr("\\]",json_string)[[1]])
+#   t <- rbind(a,b,c,d)
+#   t <- t[order(t$pos),]
+#   rownames(t) <- NULL
+#   
+#   sq <- NULL
+#   cu <- NULL 
+#   sqo <- "{"
+#   sqc <- "}"
+#   cuo <- "["
+#   cuc <- "]"
+#   
+#   t <- t %>% dplyr::mutate(sq=NA,cu=NA)
+#   
+#   for(i in 1:nrow(t)){
+#     if(t[i,"type"]==sqo){
+#       if(is.null(sq)){
+#         sq <- 1
+#         t[i,"sq"] <- sq
+#       }else{
+#         sq <- sq+1
+#         t[i,"sq"] <- sq
+#       }
+#       if(i>1)
+#         t[i,"cu"] <- t[(i-1),"cu"]
+#     }else if(t[i,"type"]==sqc){
+#       if(is.null(sq)){
+#         sq <- 0
+#         t[i,"sq"] <- "ERR:NO OPEN \\{"
+#       }else{
+#         sq <- sq-1
+#         t[i,"sq"] <- sq
+#       }
+#       if(i>1)
+#         t[i,"cu"] <- t[(i-1),"cu"]
+#     }else if(t[i,"type"]==cuo){
+#       if(is.null(cu)){
+#         cu <- 1
+#         t[i,"cu"] <- cu
+#       }else{
+#         cu <- cu+1
+#         t[i,"cu"] <- cu
+#       }
+#       if(i>1)
+#         t[i,"sq"] <- t[(i-1),"sq"]
+#     }else if(t[i,"type"]==cuc){
+#       if(is.null(cu)){
+#         cu <- 0
+#         t[i,"cu"] <- "ERR:NO OPEN \\["
+#       }else{
+#         cu <- cu-1
+#         t[i,"cu"] <- cu
+#       }
+#       if(i>1)
+#         t[i,"sq"] <- t[(i-1),"sq"]
+#     }else{
+#       t[i,"sq"] <- "GEN:ERR"
+#       t[i,"cu"] <- "GEN:ERR"
+#     }
+#   }
+#   return(t)
+# }
+
+#' check_bracket_mismatch
+#' A utility function to help with JSON bracket mismatches.
+#' @param json_string A preJSON formatted string. 
+#' @importFrom stringi stri_locate_all_regex
+#'
+#' @returns a dataframe
+#'
+#' @examples \dontrun{
+#' check_bracket_mismatch(scripts)
+#' }
 check_bracket_mismatch <- function(json_string) {
+  # Get all bracket positions at once
+  curly_open_pos <- stri_locate_all_regex(json_string, "\\{")[[1]][,1]
+  curly_close_pos <- stri_locate_all_regex(json_string, "\\}")[[1]][,1]
+  square_open_pos <- stri_locate_all_regex(json_string, "\\[")[[1]][,1]
+  square_close_pos <- stri_locate_all_regex(json_string, "\\]")[[1]][,1]
   
-  a <- data.frame(type="{",pos=gregexpr("\\{",json_string)[[1]])
-  b <- data.frame(type="}",pos=gregexpr("\\}",json_string)[[1]])
-  c <- data.frame(type="[",pos=gregexpr("\\[",json_string)[[1]])
-  d <- data.frame(type="]",pos=gregexpr("\\]",json_string)[[1]])
-  t <- rbind(a,b,c,d)
-  t <- t[order(t$pos),]
-  rownames(t) <- NULL
+  # Combine positions and types into a vector
+  positions <- c(
+    rep("{", length(curly_open_pos)),
+    rep("}", length(curly_close_pos)),
+    rep("[", length(square_open_pos)),
+    rep("]", length(square_close_pos))
+  )
   
-  sq <- NULL
-  cu <- NULL 
-  sqo <- "{"
-  sqc <- "}"
-  cuo <- "["
-  cuc <- "]"
+  # Combine positions into a single vector and sort
+  all_positions <- c(curly_open_pos, curly_close_pos, square_open_pos, square_close_pos)
+  sorted_positions <- order(all_positions)
   
-  t <- t %>% dplyr::mutate(sq=NA,cu=NA)
+  positions <- positions[sorted_positions]
+  all_positions <- all_positions[sorted_positions]
   
-  for(i in 1:nrow(t)){
-    if(t[i,"type"]==sqo){
-      if(is.null(sq)){
-        sq <- 1
-        t[i,"sq"] <- sq
-      }else{
-        sq <- sq+1
-        t[i,"sq"] <- sq
+  # Initialize counters for square and curly brackets
+  sq <- 0
+  cu <- 0
+  
+  # Create empty vectors for tracking counts
+  sq_count <- integer(length(positions))
+  cu_count <- integer(length(positions))
+  
+  for (i in seq_along(positions)) {
+    if (positions[i] == "{") {
+      sq <- sq + 1
+      sq_count[i] <- sq
+      cu_count[i] <- ifelse(i > 1, cu_count[i - 1], 0)
+    } else if (positions[i] == "}") {
+      if (sq == 0) {
+        sq_count[i] <- -1  # Error for unmatched closing brace
+      } else {
+        sq <- sq - 1
+        sq_count[i] <- sq
       }
-      if(i>1)
-        t[i,"cu"] <- t[(i-1),"cu"]
-    }else if(t[i,"type"]==sqc){
-      if(is.null(sq)){
-        sq <- 0
-        t[i,"sq"] <- "ERR:NO OPEN \\{"
-      }else{
-        sq <- sq-1
-        t[i,"sq"] <- sq
+      cu_count[i] <- ifelse(i > 1, cu_count[i - 1], 0)
+    } else if (positions[i] == "[") {
+      cu <- cu + 1
+      cu_count[i] <- cu
+      sq_count[i] <- ifelse(i > 1, sq_count[i - 1], 0)
+    } else if (positions[i] == "]") {
+      if (cu == 0) {
+        cu_count[i] <- -1  # Error for unmatched closing bracket
+      } else {
+        cu <- cu - 1
+        cu_count[i] <- cu
       }
-      if(i>1)
-        t[i,"cu"] <- t[(i-1),"cu"]
-    }else if(t[i,"type"]==cuo){
-      if(is.null(cu)){
-        cu <- 1
-        t[i,"cu"] <- cu
-      }else{
-        cu <- cu+1
-        t[i,"cu"] <- cu
-      }
-      if(i>1)
-        t[i,"sq"] <- t[(i-1),"sq"]
-    }else if(t[i,"type"]==cuc){
-      if(is.null(cu)){
-        cu <- 0
-        t[i,"cu"] <- "ERR:NO OPEN \\["
-      }else{
-        cu <- cu-1
-        t[i,"cu"] <- cu
-      }
-      if(i>1)
-        t[i,"sq"] <- t[(i-1),"sq"]
-    }else{
-      t[i,"sq"] <- "GEN:ERR"
-      t[i,"cu"] <- "GEN:ERR"
+      sq_count[i] <- ifelse(i > 1, sq_count[i - 1], 0)
     }
   }
-  return(t)
+  
+  # Handle any unexpected cases
+  sq_count[is.na(sq_count)] <- -1
+  cu_count[is.na(cu_count)] <- -1
+  
+  # Return the positions with their respective counts
+  return(data.frame(
+    pos = all_positions,
+    type = positions,
+    sq = sq_count,
+    cu = cu_count
+  ))
 }
+
 
 #' Extract URL Components
 #' 
@@ -1044,6 +1126,111 @@ create_vendor_lookup <- function(DOGE,FPDS) {
  
   return(vA)
 
+}
+
+#' scripts_to_JSON
+#' 
+#' Utility function to clean scripts snagged and conver to JSON. 
+#' 
+#' @param script Script scraped.
+#' @param verbose Whether to provide feedback
+#'
+#' @returns Data.frame from JSON
+#'
+#' @examples 
+#' \dontrun{
+#' scripts_to_JSON(scripts)
+#' }
+scripts_to_JSON <- function(script,
+                            verbose=FALSE,
+                            return="normal"){
+  
+  # # Shrink to relevant values
+  # scripts <- scripts$result$value
+  # # Cut out useless scripts at end
+  # scripts <- scripts[1:(length(scripts)-2)]
+
+  # Capture all $content nodes
+  scripts <- unlist(lapply(script, function(x) {
+    x <- gsub("<script>\\s*self\\.\\__next_f\\.push\\(\\[1,", "",x)
+    x <- gsub("\\]\\)</script>","",x)
+    x <- sub('^\\"', '', x)  # Remove the first \"
+    x <- sub('\\"$', '', x)  # Remove the last \"
+    return(x)
+  }))
+
+  # Create single character element
+  scripts <- paste(scripts,collapse="")
+  
+  if(return=="raw")
+    return(scripts)
+  # We're only concerned with what comes after the receipts marker
+  pos <- regexpr('receipts\\\\\\\":',scripts,fixed = F)
+  if(pos>0)
+    scripts <- substr(scripts, pos + attr(pos, "match.length"), nchar(scripts))
+  else
+    stop("Problem splitting string in scripts_to_JSON")
+
+  ## Get some data cleaning done, based on the garbage provided.
+  scripts <- gsub("\\\"]\\)self\\.\\_\\_next\\_f\\.push\\(\\[1,\\\"","",scripts)
+  scripts <- gsub("\\\\\\\"", "\"", scripts)
+  scripts <- gsub("\\\\\\\\\\\"", "'", scripts)
+  scripts <- gsub("\\\\\\\\n", "",scripts)
+  scripts <- gsub("\\\\\\\\", "\\\\", scripts)
+  scripts <- gsub('\\"{3}', '\\"', scripts)
+  scripts <- gsub('(\\d+)""', '\\1', scripts)
+
+
+  if(return=="preJSON")
+    return(scripts)
+  
+  if(verbose==TRUE)message("Checking brackets...")
+  ## Check for sections related to brackets. 
+  t <- check_bracket_mismatch(scripts)
+
+  ## Clean up by getting end position.
+  pos <- t[t$sq==0 & t$cu==0,"pos"]
+  pos <- min(pos)
+
+  # Clean up and trim to end bracket
+  scripts <- substr(scripts,1,(pos-1))
+
+  scripts <- jsonlite::fromJSON(scripts,flatten = T)
+  
+  return(scripts)
+}
+
+check_bracket_mismatch_stream <- function(file_path) {
+  stack <- character(0)
+  line_number <- 1
+  
+  # Stream the file line by line
+  con <- file(file_path, "r")
+  on.exit(close(con))
+  
+  while (length(line <- readLinevas(con, n = 1, warn = FALSE)) > 0) {
+    for (char in strsplit(line, NULL)[[1]]) {
+      if (char == "{" || char == "[") {
+        stack <- c(stack, char)
+      } else if (char == "}" || char == "]") {
+        if (length(stack) == 0) {
+          stop(paste("Extra closing bracket detected on line", line_number))
+        }
+        last_bracket <- tail(stack, 1)
+        stack <- head(stack, -1)
+        if ((char == "}" && last_bracket != "{") || (char == "]" && last_bracket != "[")) {
+          stop(paste("Mismatched brackets on line", line_number))
+        }
+      }
+    }
+    line_number <- line_number + 1
+  }
+  
+  if (length(stack) > 0) {
+    stop("Unmatched opening brackets found.")
+  }
+  
+  message("All brackets are properly matched.")
 }
 
 ##--------Legacy usaspending --------

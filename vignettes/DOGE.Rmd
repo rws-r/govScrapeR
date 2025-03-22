@@ -22,7 +22,9 @@ This package has two main operations: scraping data from doge.gov, and pulling d
 ## Getting DOGE Data
 As of now, the scraper captures data from doge.gov/savings. It relies on ``rvest` and reads dynamically-generated scripts. The data is then cleaned, and returned in table format. 
 ```{r,echo=TRUE}
-df <- doge_get_data(verbose=T,saveFile = F)
+
+#df <- doge_get_data(verbose=T,saveFile = F)
+df <- readRDS("../inst/extdata/DOGE/doge.RDS")
 names(df)
 ```
 As of the writing of this vignette, DOGE displayed data on three groups: contracts, grants, and real-estate. Each group continas different table structure, so the data is returned in a named list, comprised of three dataframes. The key columns for reference are `ceiling_value` and `value`. These correspond to "Total Value" and "Savings" tabs on doge.gov/savings.

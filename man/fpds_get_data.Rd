@@ -4,7 +4,12 @@
 \alias{fpds_get_data}
 \title{Get FPDS Data}
 \usage{
-fpds_get_data(piid = NULL, return = NULL, verbose = TRUE)
+fpds_get_data(
+  piid = NULL,
+  return = "xml",
+  include_related = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{piid}{A PIID value or vector of values.}

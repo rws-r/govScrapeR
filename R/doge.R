@@ -6,7 +6,7 @@
 #' @param verbose Logical, whether to produce messages
 #' @param saveFile Logical, whether to save file
 #' @param saveDir File dirctory path for saving files.
-#'
+#' @import chromote 
 #' @importFrom rvest read_html
 #' @importFrom rvest html_nodes
 #' @importFrom rvest html_text
@@ -17,6 +17,8 @@
 #' @importFrom dplyr rename
 #' @importFrom dplyr case_when
 #' @importFrom lubridate mdy
+#' @importFrom httr GET
+#' @importFrom httr add_headers
 #' @returns A named list comprised of dataframes.
 #' @examples 
 #' \dontrun{
@@ -25,7 +27,9 @@
 #' @export 
 doge_get_data <- function(verbose=TRUE,
                           saveFile=FALSE,
-                          saveDir=NULL){
+                          saveDir=NULL,
+                          testData=NULL,
+                          return="normal"){
 
   url <- "https://doge.gov/savings"
   
@@ -35,51 +39,50 @@ doge_get_data <- function(verbose=TRUE,
     `Accept-Encoding` = "gzip, deflate, br",
     `Accept-Language` = "en-US,en;q=0.9",
     `Connection` = "keep-alive"
-    )
-
+  )
   
-  if(verbose==TRUE)message("Fetching url...")
-  page <- rvest::read_html(GET(url, add_headers(custom_headers)))
-  #page <- rvest::read_html(url)
+  if(is.null(testData)){
+    if(verbose==TRUE)message("Fetching url...")
+    ## Start chromote session
+    b <- ChromoteSession$new()
+    b$Network$setUserAgentOverride(userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    ## Navigate
+    b$Page$navigate(url)
+    Sys.sleep(5)
+    # Get the document node
+    doc <- b$DOM$getDocument()
+    
+    # Find all <script> elements
+    script_nodes <- b$DOM$querySelectorAll(doc$root$nodeId, "script")
+    
+    # Extract and store the script content in a variable
+    scripts <- sapply(script_nodes$nodeIds, function(node_id) {
+      outer_html <- b$DOM$getOuterHTML(nodeId = node_id)
+      outer_html$outerHTML
+    })
+
+    # Shut down chromote session.
+    b$close()
+    #rm(b)
+    
+    if(return=="raw")
+      return(scripts)
+    
+  }else{
+    scripts <- testData
+  }
   
-  if(verbose==TRUE)message("Capturing elements...")
-  scripts <- page %>% rvest::html_nodes("script") %>% rvest::html_text()
-
-  ## Cut out final function scripts
-  scripts <- scripts[-length(scripts)]
-  ## Get NAs out.
-  scripts <- scripts[!is.na(scripts)]
-  
-  if(verbose==TRUE)message("Cleaning raw data...")
-  scripts <- paste(scripts,collapse="")
-  scripts <- stringr::str_extract(scripts, '\\\\"receipts\\\\\\":.*')
-
-  ## Get some data cleaning done, based on the garbage provided.
-  scripts <- gsub("\\\"]\\)self\\.\\_\\_next\\_f\\.push\\(\\[1,\\\"","",scripts)
-  scripts <- gsub("\\\\\\\"", "\"", scripts)  # Replace \\" with "
-  scripts <- gsub("\\\\\\\\", "\\\\", scripts)  # Replace \\ with \
-
-   #scripts <- substr(scripts,1,nchar(scripts)-8)
-  
-  if(verbose==TRUE)message("Checking brackets...")
-  ## Check for sections related to brackets. 
-  t <- check_bracket_mismatch(scripts)
-
-  ## Clean up
-  pos <- t[t$sq==0 & t$cu==0,"pos"]
-
-  scripts <- substr(scripts,1,pos)
-  
-  scripts <- paste0("{",scripts)
-
   ## Convert to json
-  if(verbose==TRUE)message("Converting to JSON...")
-  scripts <- jsonlite::fromJSON(scripts,flatten = T)
+  if(verbose==TRUE)message("Cleaning raw data and converting to JSON...")
+  
+  scripts <- scripts_to_JSON(scripts,
+                            verbose=verbose)
+
   
   if(verbose==TRUE)message("Building objects...")
-  contracts <- scripts$receipts$contracts
-  leases <- scripts$receipts$leases 
-  grants <- scripts$receipts$grants
+  contracts <- scripts$contracts
+  leases <- scripts$leases 
+  grants <- scripts$grants
   
   
   

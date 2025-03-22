@@ -4,7 +4,13 @@
 \alias{doge_get_data}
 \title{DOGE Get Data}
 \usage{
-doge_get_data(verbose = TRUE, saveFile = FALSE, saveDir = NULL)
+doge_get_data(
+  verbose = TRUE,
+  saveFile = FALSE,
+  saveDir = NULL,
+  testData = NULL,
+  return = "normal"
+)
 }
 \arguments{
 \item{verbose}{Logical, whether to produce messages}
