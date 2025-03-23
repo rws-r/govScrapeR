@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">govScrapeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,17 +75,9 @@ two.</p>
 on `<code>rvest</code> and reads dynamically-generated scripts. The data
 is then cleaned, and returned in table format.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/doge_get_data.html">doge_get_data</a></span><span class="op">(</span>verbose<span class="op">=</span><span class="cn">T</span>,saveFile <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Fetching url...</span></span>
-<span><span class="co">#&gt; Capturing elements...</span></span>
-<span><span class="co">#&gt; Cleaning raw data...</span></span>
-<span><span class="co">#&gt; Checking brackets...</span></span>
-<span><span class="co">#&gt; Converting to JSON...</span></span>
-<span><span class="co">#&gt; Building objects...</span></span>
-<span><span class="co">#&gt; Dataframe cleaning...</span></span>
-<span><span class="co">#&gt; Building return list...</span></span>
-<span><span class="co">#&gt; Writing file...</span></span>
-<span><span class="co">#&gt; Done.</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="co">#df &lt;- doge_get_data(verbose=T,saveFile = F)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"../inst/extdata/DOGE/doge.RDS"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "contracts" "leases"    "grants"</span></span></code></pre></div>
 <p>As of the writing of this vignette, DOGE displayed data on three
@@ -109,9 +101,6 @@ validating published data with government data, you can use
 contract.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fpds_get_data.html">fpds_get_data</a></span><span class="op">(</span>piid<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9523ZY21P0045"</span>,<span class="st">"9531CB24A0009"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   |                                                                              |                                                                      |   0%</span></span>
-<span><span class="co">#&gt; Processing 2 PIID values.</span></span>
-<span><span class="co">#&gt;   |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span></span>
 <span><span class="co">#&gt; [1] "Successful iterations: 2  | Failed iterations:  0 \n\nFailed at:"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "AWARDS" "IDV"</span></span></code></pre></div>
@@ -144,7 +133,7 @@ about the dataset downloaded from doge.gov/savings. Second,
 rows downloaded from FPDS.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/doge_summarize.html">doge_summarize</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Number of Contracts Entries: 5631 </span></span>
+<span><span class="co">#&gt; Number of Contracts Entries: 5634 </span></span>
 <span><span class="co">#&gt; Number of Leases Entries: 657 </span></span>
 <span><span class="co">#&gt; Number of Grants Entries: 7616 </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -160,15 +149,15 @@ rows downloaded from FPDS.</p>
 <span><span class="co">#&gt; Min Lease Savings: $0 </span></span>
 <span><span class="co">#&gt; Min Grant Savings: -$3,037.58 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Median Contract Savings: $58,607 </span></span>
+<span><span class="co">#&gt; Median Contract Savings: $58,639 </span></span>
 <span><span class="co">#&gt; Median Leases Savings: $144,652 </span></span>
 <span><span class="co">#&gt; Median Grant Savings: $34,959.48 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ------</span></span>
-<span><span class="co">#&gt; Estimated savings are currently $105,000,000,000. The doge.gov/savings website states that approximately 30% of receipts. Posted receipts total $37,408,387,474. Extrapolating, this would suggest we should see $124,694,624,913 in savings. This is a difference of -$19,694,624,913.</span></span>
+<span><span class="co">#&gt; Estimated savings are currently $105,000,000,000. The doge.gov/savings website states that approximately 30% of receipts. Posted receipts total $37,410,233,775. Extrapolating, this would suggest we should see $124,700,779,250 in savings. This is a difference of -$19,700,779,250.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;    Category     Total_Value         Savings</span></span>
-<span><span class="co">#&gt; 1 Contracts $46,173,389,538 $19,097,436,799</span></span>
+<span><span class="co">#&gt; 1 Contracts $46,176,439,000 $19,099,283,100</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   Category Annual_Lease      Savings</span></span>
@@ -181,14 +170,14 @@ rows downloaded from FPDS.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [1] "Savings Table"</span></span>
 <span><span class="co">#&gt;    Category         Savings</span></span>
-<span><span class="co">#&gt; 1 Contracts $19,097,436,799</span></span>
+<span><span class="co">#&gt; 1 Contracts $19,099,283,100</span></span>
 <span><span class="co">#&gt; 2    Leases    $349,341,035</span></span>
 <span><span class="co">#&gt; 3    Grants $17,961,609,640</span></span>
-<span><span class="co">#&gt; 4  Subtotal $37,408,387,474</span></span>
+<span><span class="co">#&gt; 4  Subtotal $37,410,233,775</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 51 × 2</span></span></span>
 <span><span class="co">#&gt;    agency                                                          total_savings</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> USAID                                                           $11,775,537,…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> USAID                                                           $11,777,383,…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Department of Treasury                                          $2,185,520,0…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Department of Homeland Security                                 $829,388,822 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Department of Veterans Affairs                                  $809,081,237 </span></span>
