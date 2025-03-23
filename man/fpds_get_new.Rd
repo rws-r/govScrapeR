@@ -7,7 +7,7 @@
 fpds_get_new(
   doge_data = NULL,
   fpds_data = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   return = "combined"
 )
 }

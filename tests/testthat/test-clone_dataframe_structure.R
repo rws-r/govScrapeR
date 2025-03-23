@@ -1,12 +1,17 @@
-a <- data.frame(a=c(1:10),b=c(rep("A",10)),c=as.Date("2000-01-01"),d=as.logical(rep(TRUE)))
+a <- data.frame(a=c(1:10),
+                b=c(rep("A",10)),
+                c=as.Date("2000-01-01"),
+                d=as.logical(rep(TRUE)))
 b <- data.frame(lapply(a,as.character))
-c <- data.frame(x="X",y=NA,z=0)
+c <- data.frame(x="X",
+                y=NA,
+                z=0)
 d <- a
 names(d) <- c("a","wut","c","d")
 
 
-test_that("match_col_types proprly returns matched data", {
-  x <- match_col_types(a,b)
+test_that("clone_dataframe_structure proprly returns matched data", {
+  x <- clone_dataframe_structure(a,b)
   expect_type(x,"list")
   
   a.a <- class(a[[1]])
@@ -25,6 +30,5 @@ test_that("match_col_types proprly returns matched data", {
 })
 
 test_that("match_col_types throws correct errors",{
-  expect_error(match_col_types(a,c))
-  expect_message(match_col_types(a,d))
+  expect_error(clone_dataframe_structure(a,c))
 })

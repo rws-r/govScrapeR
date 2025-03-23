@@ -801,12 +801,29 @@ load_FPDS_fields <- function(contract_type=NULL){
     stop("Invalid type.")
 }
 
-#' match_col_types
+
+convertability <- function(vec,type){
+  # Check for extant NAs
+  na_vec <- is.na(vec)
+  # see if na values are generated via conversion. Compare both to see if diff.
+  switch(
+    type,
+    "character" = all(na_vec==is.na(suppressWarnings(as.character(vec)))),
+    "integer" = all(na_vec==is.na(suppressWarnings(as.integer(vec)))),
+    "numeric" = all(na_vec==is.na(suppressWarnings(as.numeric(vec)))),
+    "Date" = tryCatch({all(na_vec==is.na(suppressWarnings(as.Date(vec))))},
+                      error=function(e){FALSE}),
+    "logical" = all(na_vec==is.na(suppressWarnings(as.logical(vec)))),
+    "NO VALID TYPE"
+  )
+}
+
+#' clone_dataframe_structure
 #' 
 #' Internal function to clone structure of a dataframe.
 #'
-#' @param master Primary data.frame to source from.
-#' @param slave Data.frame to clone.
+#' @param source Primary data.frame to source from.
+#' @param clone Data.frame to clone.
 #'
 #' @returns A data.frame.
 #'
@@ -815,59 +832,73 @@ load_FPDS_fields <- function(contract_type=NULL){
 #' match_col_types(a,b)
 #' }
 #' 
-match_col_types <- function(master=NULL,
-                            slave=NULL){
+clone_dataframe_structure <- function(source=NULL,
+                                      clone=NULL){
   
-  if(!is.null(master) & !is.null(slave)){
-    if(ncol(master)!=ncol(slave))
-      stop("match_col_types() > Columms of data.frames do not match.")
-    if(FALSE %in% (names(master)==names(slave))){
-      message("Column names do not match. Will be resolved in bind_rows.")
-    }
-    for(i in 1:ncol(slave)){
-      t <- master[[i]]
-      if (is.character(t)){
-        slave[,i] <- as.character(slave[,i])
-      }else if (is.numeric(t)){
-        if(is.numeric(slave[,i])){
-          slave[,i] <- as.numeric(slave[,i])
-        }else{
-          master[,i] <- as.character(master[,i])
-          slave[,i] <- as.character(slave[,i])
-        }
-      }else if (is.logical(t)){
-        slave[,i] <- as.logical(slave[,i])
-      }else if (inherits(t, "POSIXct")){
-        slave[,i] <- as.POSIXct(slave[,i])
-      }else if (inherits(t, "Date")){
-        slave[,i] <- as.Date(slave[,i])
-      }else if (is.complex(t)){
-        slave[,i] <- as.complex(slave[,i])
-      }else if (is.double(t)){
-        if(is.numeric(slave[,i])){
-          slave[,i] <- as.double(slave[,i])
-        }else{
-          master[,i] <- as.character(master[,i])
-          slave[,i] <- as.character(slave[,i])
-        }
-      }else if (is.integer(t)){
-        if(is.numeric(slave[,i])){
-          slave[,i] <- as.integer(slave[,i])
-        }else{
-          master[,i] <- as.character(master[,i])
-          slave[,i] <- as.character(slave[,i])
-        }
-      }else if (is.list(t)){
-        slave[,i] <- as.list(slave[,i])
-      }else{
-        stop("No valid column types available in this data.frame")
+  if(!is.null(source) & !is.null(clone)){
+    
+    # Ensure matching column names
+    cols_shared <- intersect(names(source), names(clone))
+    if (length(cols_shared) == 0) stop("No shared columns between source and clone.")
+    warning_rows <- NULL
+    # Apply class matching using a simplified function
+    for (col in cols_shared) {
+      class_source <- class(source[[col]])
+      class_clone <- class(clone[[col]])
+      
+      if (!identical(class_source, class_clone)) {
+        if(class_source=="character")
+          if(convertability(clone[[col]],"character")==TRUE){
+            clone[[col]] <- as.character(clone[[col]])
+          }else{
+            source[[col]] <- as.character(source[[col]])
+            clone[[col]] <- as.character(clone[[col]])
+          }
+        else if(class_source=="integer")
+          if(convertability(clone[[col]],"integer")==TRUE){
+            clone[[col]] <- as.integer(clone[[col]])
+          }else{
+            ## Deal with possible 32-bit integer limitations
+            if(convertability(clone[[col]],"numeric")==TRUE){
+              clone[[col]] <- as.numeric(clone[[col]])
+              source[[col]] <- as.numeric(source[[col]])
+            }else{
+              source[[col]] <- as.character(source[[col]])
+              clone[[col]] <- as.character(clone[[col]])
+            }
+          }
+        else if(class_source=="numeric")
+          if(convertability(clone[[col]],"numeric")==TRUE){
+            clone[[col]] <- as.numeric(clone[[col]])
+          }else{
+            source[[col]] <- as.character(source[[col]])
+            clone[[col]] <- as.character(clone[[col]])
+          }
+        else if(class_source=="Date")
+          if(convertability(clone[[col]],"Date")==TRUE){
+            clone[[col]] <- as.Date(clone[[col]])
+          }else{
+            source[[col]] <- as.character(source[[col]])
+            clone[[col]] <- as.character(clone[[col]])
+          }
+        else if(class_source=="logical")
+          if(convertability(clone[[col]],"logical")==TRUE){
+            clone[[col]] <- as.logical(clone[[col]])
+          }else{
+            source[[col]] <- as.character(source[[col]])
+            clone[[col]] <- as.character(clone[[col]])
+          }
+        else
+          type.convert(clone[[col]],as.is=T)
       }
     }
   }
-  cleaned_data <- list(master=master,
-                       slave=slave)
-  return(cleaned_data)
+  
+  return(list(SOURCE=source,
+              CLONE=clone))
 }
+  
+ 
 
 #' clean_and_match
 #'

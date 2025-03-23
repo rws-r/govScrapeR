@@ -66,7 +66,7 @@ fpds_stats <- function(df,
 #' @export
 fpds_get_new <- function(doge_data=NULL,
                          fpds_data=NULL,
-                         verbose=TRUE,
+                         verbose=FALSE,
                          return="combined"){
   
   if(inherits(doge_data,"list"))
@@ -92,16 +92,23 @@ fpds_get_new <- function(doge_data=NULL,
     if(verbose==T)message(paste0("Found ",length(newPIID)," new entries. Starting download."))
   
   newData <- fpds_get_data(piid = newPIID,verbose=verbose)
-
+  
   if(return=="combined"){ 
-    msa <- match_col_types(fpds_data$AWARDS,newData$AWARDS)
-    msi <- match_col_types(fpds_data$IDV,newData$IDV)
-    if(!is.null(msa$master) & !is.null(msa$slave))
-      nda <-  suppressMessages(dplyr::bind_rows(msa$master,msa$slave))
+    if(!is.null(fpds_data$AWARDS) & !is.null(newData$AWARDS))
+      msa <- clone_dataframe_structure(fpds_data$AWARDS,newData$AWARDS)
+    else
+      msa <- newData$AWARDS
+    if(!is.null(fpds_data$IDV) & !is.null(newData$IDV))
+      msi <- clone_dataframe_structure(fpds_data$IDV,newData$IDV)
+    else
+      msi <- newData$IDV
+    
+    if(!is.null(msa))
+      nda <-  suppressMessages(dplyr::bind_rows(msa[[1]],msa[[2]]))
     else
       nda <- fpds_data$AWARDS
-    if(!is.null(msi$master) & !is.null(msi$slave))
-      ndi <-  suppressMessages(dplyr::bind_rows(msi$master,msi$slave))
+    if(!is.null(msi))
+      ndi <-  suppressMessages(dplyr::bind_rows(msi[[1]],msi[[2]]))
     else
       ndi <- fpds_data$IDV
     
@@ -241,14 +248,27 @@ xml_to_table <- function(x=NULL,
   
 }
 
+#' fpds_call
+#'
+#' @param piid_val Supplied PIID lookup
+#' @param start For pagination, start value
+#' @param return Options are "xml", "url," "raw." Url returns call url; xml fetches the xml needed for parsing; raw is for testing.
+#' @param verbose Logical, whether to provide feedback.
+#'
+#' @returns Either an xml file, a raw html content file, or the url.
+#'
+#' @examples 
+#' \dontrun{
+#' fpds_call("XXXXXXX")
+#' }
 fpds_call <- function(piid_val=NULL,
                       start=NULL,
-                      return="xml"){
+                      return="xml",
+                      verbose=FALSE){
   base_url <- "https://www.fpds.gov/ezsearch/search.do?s=FPDS&indexName=awardfull&templateName=1.5.3&q="      
   params <- piid_val
   url <- paste0(base_url,params,"&rss=1&feed=atom0.3&start=",start)
-  # message(paste0("Trying ",url))
-  print(url)
+  if(verbose==TRUE)message(paste0("Trying ",url))
   if(return=="url")
     return(url)
   
@@ -301,9 +321,12 @@ fpds_call <- function(piid_val=NULL,
 #' @importFrom httr status_code
 #' @importFrom httr parse_url
 #' @importFrom xml2 xml_find_first
+#' @importFrom xml2 xml_find_all
 #' @importFrom xml2 read_xml
 #' @importFrom xml2 xml_ns
 #' @importFrom xml2 xml_attr
+#' @importFrom xml2 xml_text
+#' @importFrom xml2 xml_name
 #' @importFrom readr type_convert
 #' @returns A named list, consisting of two dataframes: AWARDS and IDV.
 #' @examples
@@ -315,7 +338,7 @@ fpds_call <- function(piid_val=NULL,
 fpds_get_data <- function(piid=NULL,
                               return="xml",
                               include_related=FALSE,
-                              verbose=TRUE){
+                              verbose=FALSE){
   
   ## Set chunk counter
   chunk=0
@@ -353,7 +376,7 @@ fpds_get_data <- function(piid=NULL,
     
     ## Make fpds_call, and handle errors.
     if(verbose==T)message(paste0("Sending request for ",piid[i],"..."))
-    x <- fpds_call(piid=piid_val,start=0)
+    x <- fpds_call(piid=piid_val,start=0,verbose=verbose)
     
     if(return=="raw")
       return(x)
@@ -398,7 +421,7 @@ fpds_get_data <- function(piid=NULL,
         
         if(verbose==T)message(paste0("> Sending request for ",piid[i],": page ",lp,",..."))
         
-        xx <- fpds_call(piid_val=piid_val,start = st)
+        xx <- fpds_call(piid_val=piid_val,start = st,verbose=verbose)
 
         if(length(xml_find_all(x,"//d1:content"))==0) {
           message(paste(">> Skipping PIID:", piid_val, "due to PIID lookup failure"))
