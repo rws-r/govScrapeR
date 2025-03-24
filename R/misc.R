@@ -940,7 +940,7 @@ clean_and_match <- function(FPDS_data=NULL,
     ## with final non-matches. 
     
     require(dplyr)
-    fa <- FPDS_data$AWARDS
+    fa <- FPDS_data$AWARD
     fi <- FPDS_data$IDV
     dc <- DOGE_data$contracts
     uniquePIIDS_awards <- unique(fa$PIID)
@@ -1066,7 +1066,7 @@ clean_and_match <- function(FPDS_data=NULL,
 
 col_tester <- function(doge, fpds, piids, d_col_name, f_col_name, format = "Date") {
   d <- doge$contracts
-  f <- fpds$AWARDS
+  f <- FPDS$AWARD
   
   dv <- d[d$PIID == piids, ]
   fv <- f[f$PIID == piids, ]
@@ -1144,11 +1144,11 @@ create_vendor_lookup <- function(DOGE,FPDS) {
     vD <- DOGE$contracts$vendor
   else
     vD <- DOGE$vendor
-  if(!is.null(FPDS$AWARDS))
-    vF <- FPDS$AWARDS$vendorName
+  if(!is.null(FPDS$AWARD))
+    vF <- FPDS$AWARD$vendorName
   else
     vF <- FPDS$vendorName
-  
+
   vDd <- data.frame(doge_vendor = vD) %>% mutate(vendor_clean = charclean(doge_vendor)) %>% distinct()
   vFd <- data.frame(fpds_vendor = vF) %>% mutate(vendor_clean = charclean(fpds_vendor)) %>% distinct()
   

@@ -172,14 +172,54 @@ fpds_get_xml_schemas <- function(){
   
 }
 
-check_xml_type <- function(doc) {
+check_xml_type <- function(doc,return="check") {
+  if(return=="check"){
   if(!is.na(xml_find_first(doc,"//ns1:IDV")))
     type <- "IDV"
+  else if(!is.na(xml_find_first(doc,"//ns1:IDVExtension")))
+    type <- "IDVExtension"
   else if(!is.na(xml_find_first(doc,"//ns1:award")))
     type <- "award"
+  else if(!is.na(xml_find_first(doc,"//ns1:awardExtension")))
+    type <- "awardExtension"
+  else if(!is.na(xml_find_first(doc,"//ns1:contract")))
+    type <- "contract"
+  else if(!is.na(xml_find_first(doc,"//ns1:contractExtension")))
+    type <- "contractExtension"
+  else if(!is.na(xml_find_first(doc,"//ns1:OtherTransactionAward")))
+    type <- "OtherTransactionAward"
+  else if(!is.na(xml_find_first(doc,"//ns1:OtherTransactionContract")))
+    type <- "OtherTransactionContract"
+  else if(!is.na(xml_find_first(doc,"//ns1:OtherTransactionIDV")))
+    type <- "OtherTransactionIDV"
+  else if(!is.na(xml_find_first(doc,"//ns1:NASASpecificAwardElements")))
+    type <- "NASASpecificAwardElements"
   else
-    type <- "Other"
+    type <- "ERR"
   return(type)
+  }else{
+    masterList <- data.frame(type=c("award",
+                                    "IDV",
+                                    "awardExtension",
+                                    "IDVExtension",
+                                    "contract",
+                                    "contractExtension",
+                                    "OtherTransactionAward",
+                                    "OtherTransactionContract",
+                                    "OtherTransactionIDV",
+                                    "NASASpecificAwardElements"),
+                             label=c("AWARD",
+                                     "IDV",
+                                     "AWARDEXTENSION",
+                                     "IDVEXTENSION",
+                                     "CONTRACT",
+                                     "CONTRACTEXTENSION",
+                                     "OTHERTRANSACTIONAWARD",
+                                     "OTHERTRANSACTIONCONTRACT",
+                                     "OTHERTRANSACTIONIDV",
+                                     "NASASPECIFICAWARDELEMENTS"))
+    return(masterList)
+  }
 }
 
 xml_to_table <- function(x=NULL,
@@ -191,11 +231,11 @@ xml_to_table <- function(x=NULL,
     type <- check_xml_type(x)
   else
     type <- xtype
- 
+
   # Select parents
   parent_nodes <- xml_find_all(x, paste0("//ns1:",type))
   # TODO Update this to allow for mixed grabs.
-  
+
   # If a different kind, we're dealing with subawards. 
   if(length(parent_nodes)>0){
     
@@ -212,14 +252,13 @@ xml_to_table <- function(x=NULL,
     
     # Combine all records into a single dataframe
     result_df <- do.call(bind_rows, data_list)
-    
+
     if(type=="award"){
       names(result_df)[names(result_df)=="PIID.1"] <- "idvPIID"
       names(result_df)[names(result_df)=="agencyID.1"] <- "idvAgencyID"
       names(result_df)[names(result_df)=="modNumber.1"] <- "idvModNumber"
       names(result_df)[names(result_df)=="countryCode.1"] <- "idvCountryCode"
-    }
-    if(type=="IDV"){
+    }else if(type=="IDV"){
       nid <- names(result_df)
       if("PIID.1" %in% nid)
         names(result_df)[names(result_df)=="PIID.1"] <- "parentPIID"
@@ -227,15 +266,18 @@ xml_to_table <- function(x=NULL,
         names(result_df)[names(result_df)=="agencyID.1"] <- "parentAgencyID"
       #if("modNumber.1" %in% nid)names(result_df)[names(result_df)=="modNumber.1"] <- "parentModNumber"
       #if("countryCode.1" %in% nid)names(result_df)[names(result_df)=="countryCode.1"] <- "parentCountryCode"
+    }else if(type=="ERR"){
+      stop("Problem with supplied type.")
+    }else{
+      
     }
-  
+
     if(include_related==FALSE)
       result_df <- result_df[result_df$PIID==primary_PIID,]
     
     if(nrow(result_df)>0)
       result_df$contract_type <- type
-    
-    
+
     #result_df <- suppressWarnings(type.convert(result_df))
     
     return(result_df)
@@ -337,8 +379,17 @@ fpds_call <- function(piid_val=NULL,
 #' 
 fpds_get_data <- function(piid=NULL,
                               return="xml",
-                              include_related=FALSE,
+                              include_related=TRUE,
                               verbose=FALSE){
+  
+  if(inherits(piid,"data.frame")){
+    if("contracts" %in% names(piid))
+      piid <- piid$contracts$PIID
+    else if("PIID" %in% names(piid))
+      piid <- piid$PIID
+    else
+      piid <- piid
+  }
   
   ## Set chunk counter
   chunk=0
@@ -346,13 +397,24 @@ fpds_get_data <- function(piid=NULL,
   ## For data types down at the bottom.
   a <- NULL
   b <- NULL
-  dl <- list(AWARDS=NULL,
-             IDV=NULL)
+  dl <- list()
   succLoops <- 0
   failLoops <- 0
   failTable <- data.frame(PIID=character(),
                           StartN=character())
   temp_path <- file.path(tempdir(), "fpds/tmp")
+  
+  ## Check for NA or empty values in PIID. Empty values send us to the infinity zone on FPDS.
+  ## Strip these out and return a message.
+  mn <- mb <- NULL
+  if(any(is.na(piid))){
+    message("NA values detected. Removing to avoid the FPDS infinity hole.")
+    piid <- piid[!is.na(piid)]
+  }
+  if(any(piid=="" | piid==" ")){
+    message("Blank values detected. Removing to avoid the FPDS infinity hole.")
+    piid <- piid[piid != "" & piid!=" "]
+  }
   
   ## Check for supplied PIIDs, start a count for N supplied PIIDs.
   if(verbose==T)message("Calculating PIID loops...")
@@ -446,25 +508,76 @@ fpds_get_data <- function(piid=NULL,
     }
     
     if(verbose==T)message("Bundling data...")
-        if(type=="award"){
-      if(is.null(dl$AWARDS)){
-        dl$AWARDS <- t
-      }else{
-        a <- dl$AWARDS
-        a <- suppressMessages(dplyr::bind_rows(a,t))
-        dl$AWARDS <- a
-      }
-    }else if(type=="IDV"){
-      if(is.null(dl$IDV)){
-        dl$IDV <- t
-      }else{
-        b <- dl$IDV
-        b <- suppressMessages(dplyr::bind_rows(b,t))
-        dl$IDV <- b
-      }
-    }else{
-      stop("Not a valid contract_type.")
-    }
+    cx <- check_xml_type(return="master")
+    cxt <- cx[cx$type==type,"label"]
+    if(is.null(dl[[cxt]]))
+      dl[[cxt]] <- t
+    else
+      dl[[cxt]] <- suppressMessages(dplyr::bind_rows(dl[[cxt]],t))
+    
+    # if(type=="award"){
+    #   if(is.null(dl$AWARD)){
+    #     dl$AWARD <- t
+    #   }else{
+    #     dl$AWARD <- suppressMessages(dplyr::bind_rows(dl$AWARD,t))
+    #   }
+    # }else if(type=="IDV"){
+    #   if(is.null(dl$IDV)){
+    #     dl$IDV <- t
+    #   }else{
+    #     dl$IDV <- suppressMessages(dplyr::bind_rows(dl$IDV,t))
+    #   }
+    # }else if(type=="awardExtension"){
+    #   if(is.null(dl$AWARDEXTENSION)){
+    #     dl$AWARDEXTENSION <- t
+    #   }else{
+    #     dl$AWARDEXTENSION <- suppressMessages(dplyr::bind_rows(dl$AWARDEXTENSION,t))
+    #   }
+    # }else if(type=="IDVExtension"){
+    #   if(is.null(dl$IDVEXTENSION)){
+    #     dl$IDVEXTENSION <- t
+    #   }else{
+    #     dl$IDVEXTENSION <- suppressMessages(dplyr::bind_rows(dl$IDVEXTENSION,t))
+    #   }
+    # }else if(type=="contract"){
+    #   if(is.null(dl$CONTRACT)){
+    #     dl$CONTRACT <- t
+    #   }else{
+    #     dl$CONTRACT <- suppressMessages(dplyr::bind_rows(dl$CONTRACT,t))
+    #   }
+    # }else if(type=="contractExtension"){
+    #   if(is.null(dl$CONTRACTEXTENSION)){
+    #     dl$CONTRACTEXTENSION <- t
+    #   }else{
+    #     dl$CONTRACTEXTENSION <- suppressMessages(dplyr::bind_rows(dl$CONTRACTEXTENSION,t))
+    #   }
+    # }else if(type=="OtherTransactionAward"){
+    #   if(is.null(dl$OTHERTRANSACTIONAWARD)){
+    #     dl$OTHERTRANSACTIONAWARD <- t
+    #   }else{
+    #     dl$OTHERTRANSACTIONAWARD <- suppressMessages(dplyr::bind_rows(dl$OTHERTRANSACTIONAWARD,t))
+    #   }
+    # }else if(type=="OtherTransactionContract"){
+    #   if(is.null(dl$OTHERTRANSACTIONCONTRACT)){
+    #     dl$OTHERTRANSACTIONCONTRACT <- t
+    #   }else{
+    #     dl$OTHERTRANSACTIONCONTRACT <- suppressMessages(dplyr::bind_rows(dl$OTHERTRANSACTIONCONTRACT,t))
+    #   }
+    # }else if(type=="OtherTransactionIDV"){
+    #   if(is.null(dl$OTHERTRANSACTIONIDV)){
+    #     dl$OTHERTRANSACTIONIDV <- t
+    #   }else{
+    #     dl$OTHERTRANSACTIONIDV <- suppressMessages(dplyr::bind_rows(dl$OTHERTRANSACTIONIDV,t))
+    #   }
+    # }else if(type=="NASASpecificAwardElements"){
+    #   if(is.null(dl$NASASPECIFICAWARDELEMENTS)){
+    #     dl$NASASPECIFICAWARDELEMENTS <- t
+    #   }else{
+    #     dl$NASASPECIFICAWARDELEMENTS <- suppressMessages(dplyr::bind_rows(dl$NASASPECIFICAWARDELEMENTS,t))
+    #   }
+    # }else{
+    #   stop("Not a valid contract_type.")
+    # }
     
     if(i==1){
       if(dir.exists(temp_path)){
@@ -495,26 +608,15 @@ fpds_get_data <- function(piid=NULL,
   ## Read saved files into memory and bind rows.
   if(verbose==T)message("Loading and merging all data...")
   files <- list.files(path = temp_path, pattern = "\\.RDS$", full.names = TRUE)
-  awardFiles <- lapply(files, function(f) readRDS(f)$AWARDS)
-  idvFiles <- lapply(files, function(f) readRDS(f)$IDV)
-  
-  if(length(awardFiles)>=1 & !is.null(awardFiles[[1]]))
-    mAF <-  suppressMessages(bind_rows(awardFiles))
-  else
-    mAF <- NULL
-  
-  if(length(idvFiles)>=1 & !is.null(idvFiles[[1]]))
-    mIF <-  suppressMessages(bind_rows(idvFiles))
-  else
-    mIF <- NULL
-  
-  ## Set column formats
-  if(!is.null(mAF))
-    mAF <- suppressWarnings(type.convert(mAF))
-  if(!is.null(mIF))
-    mIF <- suppressWarnings(type.convert(mIF))
-  
-  dl <- list(AWARDS=mAF,IDV=mIF)
+  fs <- list()
+  for(i in seq_len(nrow(cx))){
+    lb <- cx[i,"label"]
+    rw <- lapply(files,function(f) readRDS(f)[[lb]])
+    if(length(rw[[1]])>1 & !is.null(rw[[1]])){
+      fs[[lb]] <- suppressMessages(bind_rows(rw))
+      fs[[lb]] <- suppressWarnings(type.convert(fs[[lb]]))
+    }
+  }
   
   if(calc>1)
     print(paste("Successful iterations:",succLoops," | Failed iterations: ",failLoops,"\n\nFailed at:"))
@@ -523,7 +625,7 @@ fpds_get_data <- function(piid=NULL,
   
   if(verbose==T)message("Congrats, you're done.")
   
-  return(dl)
+  return(fs)
 }
 
 build_unique_id <- function(data){
