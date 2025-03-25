@@ -1,6 +1,6 @@
 Package: govScrapeR
 Title: GovScrapeR
-Version: 0.0.0.9006
+Version: 0.0.0.9007
 Author: RStevenson
 Maintainer: RStevenson <thebobstevenson@protonmail.com>
 Description: Let's keep government accountable! govScrapeR is a basic R package to scrape and return data from government websites in table format. At its most basic level, govScrapeR was written to pull data from whitehouse.gov, and doge.gov. Functionality primarily focuses on news releases and the DOGE "savings" page, to allow for comparison between posted data, and records on fpds.gov. This package is in early stages, and as such has plenty of room to grow. Happy scraping!
