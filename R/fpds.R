@@ -19,7 +19,7 @@
 fpds_stats <- function(df,
                        returnSummary=TRUE,
                        returnUniquePIIDs=FALSE){
-  awards <- df$AWARDS
+  awards <- df$AWARD
   idv <- df$IDV
   na <- nrow(awards)
   ni <- nrow(idv)
