@@ -44,11 +44,5 @@ As a note, to avoid overloading memory, FPDS data is written to a `tempdir()` lo
 ## Updating FPDS Data
 The data from doge.gov/savings is periodically updated. When it is, you can use `fpds_get_new()` with the new DOGE data, and an existing FPDS data object to identify and query only the new additions to the DOGE data. This alleviates unnecessarily long queries every time there's a change on doge.gov/savings.
 
-## Convenience Functions
-Two very basic convenience functions are available. First, `doge_summarise()` presents basic statistical information about the dataset downloaded from doge.gov/savings. Second, `fpds_stats` lists very basic information about the number of rows downloaded from FPDS. 
-```{r}
-doge_summarize(df)
-fpds_stats(f)
-```
 
 
