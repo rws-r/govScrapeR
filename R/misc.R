@@ -905,20 +905,18 @@ clone_dataframe_structure <- function(source=NULL,
 #' A utility function designed to help match DOGE data and FPDS data. FPDS data
 #' returns multiple transaction values per PIID; DOGE data only includes on row.
 #' While it is possible to match on PIID and modNumber, this frequently returns
-#' several values. Additionally, descriptions and vendors do not always match,
-#' as there seems to be some editing that occassionally gets in the way. This
-#' function seeks to standardize and match data using iterative matching via
-#' increasingly broadening scope. Duplicates are dealt with by repeating the
-#' process if possible.
+#' several values.
 
 #' @param FPDS_data Supplied data from FPDS
 #' @param DOGE_data Supplied data from DOGE 
-#' @param returnUnmatched Logical, whether to return unmatched PIIDS
-#' @param returnDuplicates Logical, whether to return duplciate PIIDS
 #' @param print_status Logical, whether to return feedback
 #' @param verbose Logical, whether to return messages
+#' 
+#' @importFrom dplyr left_join
+#' @importFrom dplyr join_by
+#' @importFrom dplyr mutate
 #'
-#' @returns A named list with data.frames.
+#' @returns A merged dataframe.
 #' @export
 #'
 #' @examples
@@ -928,139 +926,52 @@ clone_dataframe_structure <- function(source=NULL,
 
 clean_and_match <- function(FPDS_data=NULL,
                             DOGE_data=NULL,
-                            returnUnmatched=FALSE,
-                            returnDuplicates=FALSE,
                             print_status=TRUE,
                             verbose=F){
-    
-    ## Strategy here: 1) Create vendor lookup table and append. 2) Join Phase A: Inner join by
-    ## doge + fpds on PIID, modNumber and vendor. 3) Identify non-matched rows. Join Phase B: Try 
-    ## joining by PIID and description 4) Identify non-matched rows: Join Phase C: Try joining
-    ## by PIID and modNumber. 5) Deal with duplicates in (2:4) 6) Deal
-    ## with final non-matches. 
-    
-    require(dplyr)
-    fa <- FPDS_data$AWARD
-    fi <- FPDS_data$IDV
-    dc <- DOGE_data$contracts
-    uniquePIIDS_awards <- unique(fa$PIID)
-    uniquePIIDS_idv <- unique(fi$PIID)
-    uniquePIIDS_total <- c(uniquePIIDS_awards,uniquePIIDS_idv)
-    phase <- 1
-    nms <- c("PIID","modNumber","vendor_clean","description_standard")
-    
-    ### STEP ONE
-    vlt <- create_vendor_lookup(dc,fa)
-    
-    # Join lookup tables
-    dc <- left_join(dc,vlt$dlook,by=join_by("vendor"=="doge_vendor"))
-    fa <- left_join(fa,vlt$flook,by=join_by("vendorName"=="fpds_vendor"))
-    fi <- left_join(fi,vlt$flook,by=join_by("vendorName"=="fpds_vendor"))
-    # Trim description field 
-    dc <- dc %>% mutate(description_standard = charclean(description))
-    fa <- fa %>% mutate(description_standard = charclean(descriptionOfContractRequirement))
-    fi <- fi %>% mutate(description_standard = charclean(descriptionOfContractRequirement))
-    
-    prog_merge <- function(d,f,ff,fm,ffm,nms,phase){
-      
-      if(verbose==T)message("Joining by PIID and modNumber.")
-      # if(phase>1)
-      #   nms <- nms[1:(length(nms)-phase)]
-      ia <- inner_join(dc,f,by=nms)
-      ii <- inner_join(dc,ff,by=nms)
-      
-      stats <- c(nrow(ia),
-                 nrow(ii),
-                 length(unique(ia$PIID)),
-                 length(unique(ii$PIID)))
-      
+  
+  nma <- c("PIID","modNumber","agencyID","idvAgencyID")
+  
+  DC <- DOGE_data$contracts
+  FA <- FPDS_data$AWARD
+  FI <- FPDS_data$IDV
+  FO <- FPDS_data$OTHERTRANSACTIONAWARD
+  
+  FF <- clone_dataframe_structure(FA,FI)
+  FF <- dplyr::bind_rows(FF[[1]],FF[[2]])
+  FF <- clone_dataframe_structure(FF,FO)
+  FF <- dplyr::bind_rows(FF[[1]],FF[[2]])
+  
+  # Clean any extraneous PIIDS.
+  PIIDS_extra <- setdiff(unique(FF$PIID),unique(DC$PIID))
+  FF <- FF[!(FF$PIID %in% PIIDS_extra),]
+  # Identify any missing FPDS values.
+  PIIDS_missing <- setdiff(unique(DC$PIID),unique(FF$PIID))
+  PIIDS_missing <- PIIDS_missing[!is.na(PIIDS_missing)]
+  if(verbose==TRUE | print_status==TRUE)message(paste("It looks like FPDS is missing the following values:",paste(PIIDS_missing,collapse=",")))
+  
+  
+  x <- left_join(DC,FF,by=nma, suffix = c("_doge","_fpds"))
+  
+  UPDC <- unique(DC$PIID)
+  UPFF <- unique(FF$PIID)
+  UPx <- unique(x$PIID)
+  
+  NADC <- length(DC$PIID[is.na(DC$PIID)])
+  NAFF <- length(FF$PIID[is.na(FF$PIID)])
+  NAx <- length(x$PIID[is.na(x$PIID)])
+  
+  NRDC <- nrow(DC)
+  NRFF <- nrow(FF)
+  NRx <- nrow(x)
+  
   if(print_status==TRUE){
-      cat("JOIN PHASE ",phase,":
- nms Values: ",nms,"
- DOGE Starting Unique PIIDs: ",length(unique(dc$PIID)),"
- FPDS:AWARDS (supplied) Starting Nrow: ",nrow(f),"
- FPDS:IDV  (supplied) Starting Nrow: ",nrow(ff),"
- FPDS:AWARDS (supplied) Unique PIIDS: ",length(unique(f$PIID)),"
- FPDS:IDV (supplied) Unique PIIDS: ",length(unique(ff$PIID)),"
- nrow (merged) AWARDS: ",stats[1],"
- nrow (merged) IDV: ",stats[2],"
- unique PIIDS Awards (merged) : ",stats[3],"
- unique PIIDS IDV (merged) : ",stats[4]," 
- Probable Duplicates:AWARDS: ",stats[1]-stats[3],"
- Probable Duplicates:IDV: ",stats[2]-stats[4],"\n\n")
+    cat("Stats: 
+ DOGE Unique PIIDs: ",length(UPDC)," / Rows: ",NRDC," / NA PIIDs: ",NADC,"
+ FPDS Unique PIIDs: ",length(UPFF)," / Rows: ",NRFF," / NA PIIDs: ",NAFF,"
+ MERGED Unique PIIDs: ",length(UPx)," / Rows: ",NRx," / NA PIIDs: ",NAx)
   }
-      start_f_piid <- f$PIID
-      start_ff_piid <- ff$PIID
-      ia_not_there <- unique(f$PIID[!(f$PIID %in% ia$PIID)])
-      ii_not_there <- unique(ff$PIID[!(ff$PIID %in% ii$PIID)])
-      
-      unmatched_AWARDS <- f[f$PIID %in% ia_not_there,]
-      unmatched_IDV <- ff[ff$PIID %in% ii_not_there,]
-      
-      if(phase>1){
-        ia <- suppressMessages(dplyr::bind_rows(fm,ia))
-        ii <- suppressMessages(dplyr::bind_rows(ffm,ii))
-      }
-      
-      dupTableAwards <- ia %>% count(PIID) %>% filter(n>1)
-      dupTableIDV <- ii %>% count(PIID) %>% filter(n>1)
-      
-      mand <- ia[!(ia$PIID %in% dupTableAwards$PIID),]
-      mind <- ii[!(ii$PIID %in% dupTableIDV$PIID),]
-      
-      ret <- list(matched_awards = ia,
-                  matched_idv = ii,
-                  unmatched_awards = unmatched_AWARDS,
-                  unmatched_idv = unmatched_IDV,
-                  matched_awards_no_duplicates = mand,
-                  matched_idv_no_duplicates = mind,
-                  dup_table_awards = dupTableAwards,
-                  dup_table_idv = dupTableIDV)
-      
-      return(ret)
-      
-    }
-    
-    pm_dc <- dc
-    pm_fa <- fa
-    pm_fi <- fi
-    pm_fa_merged <- NULL
-    pm_fi_merged <- NULL
-    
-    for(i in 1:length(nms)){
-     pm <- prog_merge(pm_dc,
-                      pm_fa,
-                      pm_fi,
-                      pm_fa_merged,
-                      pm_fi_merged,
-                      nms,
-                      phase)
-      phase <- phase+1
-      pm_fa <- pm$unmatched_awards
-      pm_fi <- pm$unmatched_idv
-      pm_fa_merged <- pm$matched_awards
-      pm_fi_merged <- pm$matched_idv
-
-      if(length(nms)>1)
-        nms <- nms[1:(length(nms)-1)]
-    }
-    # Attempt to clear remaining duplicates 
-    
-    # dupsAWARDS <- pm$matched_awards[pm$matched_awards$PIID %in% pm$dup_table_awards$PIID,]
-    # dupsIDV <- pm$matched_idv[pm$matched_idv$PIID %in% pm$dup_table_idv$PIID,]
-    # 
-    # # Separate out nonduplicates
-    # nonDupsAwards <- pm$matched_awards %>% filter(!(PIID %in% pm$dupTableAwards$PIID))
-    # nonDupsIDV <- pm$matched_idv %>% filter(!(PIID %in% pm$dupTableIDV$PIID))
-    # 
-    # dupsAWARDS_A <- dupsAWARDS %>% filter(ceiling_value==totalBaseAndAllOptionsValue)
-    # dupsAWARDS_B <- dupsAWARDS %>% filter(!(ceiling_value) %in% dupsAWARDS_A$PIID & description==descriptionOfContractRequirement)
-    # dupsIDV_A <- dupsIDV
-    # dupsIDV_B <- dupsIDV
-    # print(nrow(dupsAWARDS_A))
-    # print(nrow(dupsAWARDS_B))
-    
-    return(pm)
+  
+  return(x)
     
 }
 
@@ -1465,4 +1376,25 @@ json_cleaner <- function(data, parent_key = "") {
   
   return(as_tibble(result, .name_repair = "unique"))  # Ensures unique column names
 }
+
+
+
+scanner <- function(doge, fpds) {
+  # Subset the necessary columns from fpds$AWARD
+  f <- fpds$AWARD[, c("agencyID", "PIID", "modNumber", "idvAgencyID", "idvPIID")]
+  
+  # Subset the necessary columns from doge$contracts
+  d <- doge$contracts[, c("agencyID", "PIID", "modNumber", "idvAgencyID", "idvPIID", "contractType")]
+  
+  # Perform a left join to merge f and d based on the matching columns
+  result <- left_join(d, f, by = c("agencyID", "PIID", "modNumber","idvAgencyID"))
+  
+  # Count the number of rows for each PIID and contract
+  result_summary <- result %>%
+    group_by(PIID) %>%
+    summarise(nrows = n())
+  
+  return(result_summary)
+}
+
   

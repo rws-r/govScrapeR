@@ -7,8 +7,6 @@
 clean_and_match(
   FPDS_data = NULL,
   DOGE_data = NULL,
-  returnUnmatched = FALSE,
-  returnDuplicates = FALSE,
   print_status = TRUE,
   verbose = F
 )
@@ -18,26 +16,18 @@ clean_and_match(
 
 \item{DOGE_data}{Supplied data from DOGE}
 
-\item{returnUnmatched}{Logical, whether to return unmatched PIIDS}
-
-\item{returnDuplicates}{Logical, whether to return duplciate PIIDS}
-
 \item{print_status}{Logical, whether to return feedback}
 
 \item{verbose}{Logical, whether to return messages}
 }
 \value{
-A named list with data.frames.
+A merged dataframe.
 }
 \description{
 A utility function designed to help match DOGE data and FPDS data. FPDS data
 returns multiple transaction values per PIID; DOGE data only includes on row.
 While it is possible to match on PIID and modNumber, this frequently returns
-several values. Additionally, descriptions and vendors do not always match,
-as there seems to be some editing that occassionally gets in the way. This
-function seeks to standardize and match data using iterative matching via
-increasingly broadening scope. Duplicates are dealt with by repeating the
-process if possible.
+several values.
 }
 \examples{
 \dontrun{

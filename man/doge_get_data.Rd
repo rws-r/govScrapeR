@@ -2,29 +2,36 @@
 % Please edit documentation in R/doge.R
 \name{doge_get_data}
 \alias{doge_get_data}
-\title{DOGE Get Data}
+\title{doge_get_data}
 \usage{
 doge_get_data(
-  verbose = TRUE,
-  saveFile = FALSE,
-  saveDir = NULL,
-  testData = NULL,
-  return = "normal"
+  selectGrants = TRUE,
+  selectContracts = TRUE,
+  selectLeases = TRUE,
+  selectPayments = TRUE,
+  limit = 500,
+  pageNumStart = 1,
+  verbose = T
 )
 }
 \arguments{
-\item{verbose}{Logical, whether to produce messages}
+\item{selectGrants}{Logical, whether to select grants.}
 
-\item{saveFile}{Logical, whether to save file}
+\item{selectContracts}{Logical, whether to select contracts}
 
-\item{saveDir}{File dirctory path for saving files.}
+\item{selectLeases}{Logical, whether to select leases.}
+
+\item{selectPayments}{Logical, whether to select payments.}
+
+\item{limit}{Defaults to 500; how many entries per page.}
+
+\item{pageNumStart}{Which page to start on. Defaults to 1.}
 }
 \value{
-A named list comprised of dataframes.
+A data.frame
 }
 \description{
-A fairly straightforward scraper that pulls data from dynamically-created
-scripts (javascript), cleans, and processes in table form.
+A simple function to interact with api.doge.gov. This was built for api version 0.0.1.-beta.
 }
 \examples{
 \dontrun{

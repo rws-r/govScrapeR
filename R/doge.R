@@ -1,268 +1,145 @@
-#' DOGE Get Data
+doge_get_schema <- function(){
+  base_url <- "https://api.doge.gov/openapi.json"
+  x <- GET(base_url)
+  x <- content(x,"parsed")
+  return(x)
+}
+
+
+#' doge_get_data
+#' 
+#' A simple function to interact with api.doge.gov. This was built for api version 0.0.1.-beta.
 #'
-#' A fairly straightforward scraper that pulls data from dynamically-created
-#' scripts (javascript), cleans, and processes in table form.
-#'
-#' @param verbose Logical, whether to produce messages
-#' @param saveFile Logical, whether to save file
-#' @param saveDir File dirctory path for saving files.
-#' @import chromote 
-#' @importFrom rvest read_html
-#' @importFrom rvest html_nodes
-#' @importFrom rvest html_text
-#' @importFrom stringr str_extract
-#' @importFrom jsonlite fromJSON
-#' @importFrom dplyr  mutate
-#' @importFrom dplyr %>% 
-#' @importFrom dplyr rename
-#' @importFrom dplyr case_when
-#' @importFrom lubridate mdy
+#' @param selectGrants Logical, whether to select grants.
+#' @param selectContracts Logical, whether to select contracts
+#' @param selectLeases Logical, whether to select leases.
+#' @param selectPayments Logical, whether to select payments.
+#' @param limit Defaults to 500; how many entries per page.
+#' @param pageNumStart Which page to start on. Defaults to 1.
+#' 
 #' @importFrom httr GET
-#' @importFrom httr add_headers
-#' @returns A named list comprised of dataframes.
-#' @examples 
-#' \dontrun{
+#' @importFrom httr content
+#' @importFrom jsonlite fromJSON
+#'
+#' @returns A data.frame
+#' @export
+#'
+#' @examples \dontrun{
 #' doge_get_data()
 #' }
-#' @export 
-doge_get_data <- function(verbose=TRUE,
-                          saveFile=FALSE,
-                          saveDir=NULL,
-                          testData=NULL,
-                          return="normal"){
-
-  url <- "https://doge.gov/savings"
+doge_get_data <- function(selectGrants=TRUE,
+                          selectContracts=TRUE,
+                          selectLeases=TRUE,
+                          selectPayments=TRUE,
+                          limit=500,
+                          pageNumStart=1,
+                          verbose=T){
   
-  custom_headers <- c(
-    `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    `Accept` = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-    `Accept-Encoding` = "gzip, deflate, br",
-    `Accept-Language` = "en-US,en;q=0.9",
-    `Connection` = "keep-alive"
-  )
+  if(selectGrants==FALSE & selectContracts==FALSE & selectLeases==FALSE & selectPayments==FALSE)
+    stop("No data categories selected. Please select at least one.")
   
-  if(is.null(testData)){
-    if(verbose==TRUE)message("Fetching url...")
-    ## Start chromote session
-    b <- ChromoteSession$new()
-    b$Network$setUserAgentOverride(userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-    ## Navigate
-    b$Page$navigate(url)
-    Sys.sleep(5)
-    # Get the document node
-    doc <- b$DOM$getDocument()
-    
-    # Find all <script> elements
-    script_nodes <- b$DOM$querySelectorAll(doc$root$nodeId, "script")
-    
-    # Extract and store the script content in a variable
-    scripts <- sapply(script_nodes$nodeIds, function(node_id) {
-      outer_html <- b$DOM$getOuterHTML(nodeId = node_id)
-      outer_html$outerHTML
-    })
+  if(verbose==T)message("Building api call...")
+  base_url <- "https://api.doge.gov"
+  
+  ## Dynamically build paths based on parameters above.
+  paths <- c()
+  if(selectGrants==TRUE)paths <- c(paths,"/savings/grants")
+  if(selectContracts==TRUE)paths <- c(paths,"/savings/contracts")
+  if(selectLeases==TRUE)paths <- c(paths,"/savings/leases")
+  if(selectPayments==TRUE)paths <- c(paths,"/payments")
 
-    # Shut down chromote session.
-    b$close()
-    #rm(b)
-    
-    if(return=="raw")
-      return(scripts)
-    
-  }else{
-    scripts <- testData
+  limit <- limit ## Limit for API is 500 at present
+  pnum <- pageNumStart
+  pkg <- list()
+  
+  queries <- function(kind,pn,lm){
+    if(kind=="payments"){
+      x <- list(page=pn,
+                per_page=lm)
+    }else{
+      x <- list(sort_by = "date", 
+                sort_order = "asc",
+                page=pn,
+                per_page=lm)
+    }
+    return(x)
   }
   
-  ## Convert to json
-  if(verbose==TRUE)message("Cleaning raw data and converting to JSON...")
-  
-  scripts <- scripts_to_JSON(scripts,
-                            verbose=verbose)
+  if(verbose==T)message("Running api call...")
+  for(p in paths){
 
-  
-  if(verbose==TRUE)message("Building objects...")
-  contracts <- scripts$contracts
-  leases <- scripts$leases 
-  grants <- scripts$grants
-  
-  
-  
-  if(verbose==TRUE)message("Dataframe cleaning...")
-  contracts <- suppressWarnings(contracts %>% 
-                                  dplyr::rename(award_id_piid = piid) %>% 
-                                  dplyr::mutate(date=ifelse(date=="",NA,date),
-                                                date=case_when(
-                                                  grepl("-", date) ~ as.Date(date,format = "%Y-%m-%d"),
-                                                  grepl("\\/",date) ~ mdy(date),
-                                                  .default=NA),
-                                                ceiling_value=as.numeric(ceiling_value),
-                                                value=as.numeric(value),
-                                                update_date=ifelse(update_date=="",NA,update_date),
-                                                update_date=case_when(
-                                                  grepl("-", update_date) ~ as.Date(update_date,format = "%Y-%m-%d"),
-                                                  grepl("\\/",update_date) ~ mdy(update_date),
-                                                  .default=NA)))
-  
-  leases <- suppressWarnings(leases %>% dplyr::mutate(date=ifelse(date=="",NA,date),
-                                                      date=case_when(
-                                                        grepl("-", date) ~ as.Date(date,format = "%Y-%m-%d"),
-                                                        grepl("\\/",date) ~ mdy(date),
-                                                        .default=NA),
-                                                      ceiling_value=as.numeric(ceiling_value),
-                                                      value=as.numeric(value),
-                                                      sq_ft=gsub(",","",sq_ft)))
-  
-  grants <- suppressWarnings(grants %>% dplyr::mutate(update_date=ifelse(update_date=="",NA,update_date),
-                                                      #   award_id = gsub("-M*","",award_id), # Why did this strip this out??
-                                                      update_date=case_when(
-                                                        grepl("-", update_date) ~ as.Date(update_date,format = "%Y-%m-%d"),
-                                                        grepl("\\/",update_date) ~ mdy(update_date),
-                                                        .default=NA),
-                                                      ceiling_value=as.numeric(ceiling_value),
-                                                      value=as.numeric(value)))
-  
-  contracts <- extract_url_components(contracts)
-  
-  if(verbose==TRUE)message("Building return list...")
-  data <- list(contracts=contracts,
-               leases=leases,
-               grants=grants)
-  
-  if(verbose==TRUE)message("Writing file...")
-  if(saveFile==TRUE){
-    savepath <- saveDir
-    if(!dir.exists(savepath))
-      dir.create(savepath)
-    saveRDS(data,paste0(savepath,"doge_grab_",as.Date(Sys.time()),".RDS"))
+    kind <- basename(p)
+    url <- paste0(base_url,p)
+    
+    # Make first api call
+    if(verbose==T)message(paste0("  > Trying ",paste0(base_url,p,"?page=",pnum,"&per_page=",limit)))
+    q <- queries(kind,pnum,limit)
+    page <- GET(url,query=q)
+    page <- content(page,type = "text",encoding = "UTF-8")
+    
+    j <- fromJSON(page)
+    jd <- j$result[[kind]]
+    # Get total entries
+    m <- j$meta$total_results
+    pgs <- ceiling(m/limit)
+    
+    if(pgs>1){
+      for(pg in 2:pgs){
+        pnum <- pg
+        if(verbose==T)message(paste0("  > Trying ",paste0(base_url,p,"?page=",pnum,"&per_page=",limit)))
+        q <- queries(kind,pnum,limit)
+        page <- GET(url,query=q)
+        page <- content(page,type = "text",encoding = "UTF-8")
+        jj <- fromJSON(page)
+        jjd <- jj$result[[kind]]
+        jd <- rbind(jd,jjd)
+      }
+    }
+    # Explode url to gather additional information
+    if(verbose==T)message("Extracting fpds_link components...")
+    jd <- explode_urls(jd,kind)
+    jd[jd==""] <- NA
+    pkg[[kind]] <- jd
   }
-  
-  if(verbose==TRUE)message("Done.")
-  return(data)
+  if(verbose==T)message("Done.")
+  return(pkg)
   
 }
 
-#' DOGE Summarize
+#' explode_urls
 #' 
-#' Present basic stats on the DOGE data scraped.
+#' Utility function to extract url parameters to dataframe.
 #'
-#' @param data 
-#' @param return 
-#' 
-#' @importFrom scales dollar
-#' @importFrom dplyr arrange
-#' @importFrom dplyr summarize
-#' @importFrom dplyr group_by
+#' @param y The url list (or a doge object data.frame)
+#' @param k The kind of dataset (contracts, grants, leases, payments)
 #'
-#' @returns A printed data.frame.
-#' @examples
-#'\dontrun{
-#' doge_summarize(data)
+#' @returns a dataframe of exploded url components
+#'
+#' @examples \dontrun{
+#' explode_urls(urls,"contracts")
 #' }
-#' @export
-doge_summarize <- function(data=NULL,
-                           return="all"){
-  
-  c <- data$contracts
-  l <- data$leases
-  g <- data$grants
-  ccv <- sum(c$ceiling_value,na.rm = T)
-  lcv <- sum(l$ceiling_value,na.rm = T)
-  gcv <- sum(g$ceiling_value,na.rm = T)
-  cv <- sum(c$value,na.rm = T)
-  lv <- sum(l$value,na.rm = T)
-  gv <- sum(g$value,na.rm = T)
-  
-  if(return=="all"){
-    cat(paste("Number of Contracts Entries:",nrow(c)),"\n")
-    cat(paste("Number of Leases Entries:",nrow(l)),"\n")
-    cat(paste("Number of Grants Entries:",nrow(g)),"\n\n")
-    
-    cat(paste("Max Contract:",dollar(max(c$ceiling_value,na.rm = T))),"\n")
-    cat(paste("Max Lease:",dollar(max(l$ceiling_value,na.rm=T))),"\n")
-    cat(paste("Max Grant:",dollar(max(g$ceiling_value,na.rm=T))),"\n\n")
-    
-    cat(paste("Max Contract Savings:",dollar(max(c$value,na.rm = T))),"\n")
-    cat(paste("Max Lease Savings:",dollar(max(l$value,na.rm=T))),"\n")
-    cat(paste("Max Grant Savings:",dollar(max(g$value,na.rm=T))),"\n\n")
-    
-    cat(paste("Min Contract Savings:",dollar(min(c$value,na.rm = T))),"\n")
-    cat(paste("Min Lease Savings:",dollar(min(l$value,na.rm=T))),"\n")
-    cat(paste("Min Grant Savings:",dollar(min(g$value,na.rm=T))),"\n\n")
-    
-    cat(paste("Median Contract Savings:",dollar(median(c$value,na.rm = T))),"\n")
-    cat(paste("Median Leases Savings:",dollar(median(l$value,na.rm=T))),"\n")
-    cat(paste("Median Grant Savings:",dollar(median(g$value,na.rm=T))),"\n\n")
-  }
-  
-  lbc <- c %>% group_by(agency) %>% 
-    summarize(total_savings=sum(value,na.rm = T)) %>% 
-    arrange(desc(total_savings)) %>% 
-    mutate(total_savings=dollar(total_savings))
-  
-  lbl <- l %>% group_by(agency) %>% 
-    summarize(total_savings=sum(value,na.rm=T)) %>% 
-    arrange(desc(total_savings)) %>% 
-    mutate(total_savings=dollar(total_savings))
-  
-  lbg <- g %>% group_by(agency) %>% 
-    summarize(total_savings=sum(value,na.rm=T)) %>% 
-    arrange(desc(total_savings)) %>% 
-    mutate(total_savings=dollar(total_savings))
-  
-  tc <- data.frame(Category=c("Contracts"),
-                   Total_Value = c(dollar(ccv)),
-                   Savings = c(dollar(cv)))
-  
-  tl <- data.frame(Category=c("Leases"),
-                   Annual_Lease = dollar(lcv),
-                   Savings = dollar(lv))
-  
-  tg <- data.frame(Category=c("Grants"),
-                   Total_Value = dollar(gcv),
-                   Savings = dollar(gv))
-  
-  sav <- data.frame(rbind(tc[,c(1,3)],tl[,c(1,3)],tg[,c(1,3)]))
-  sav$Savings <- as.numeric(gsub("[$,]","",sav$Savings))
-  tot_savings <- sum(sav$Savings,na.rm = T)
-  sav[4,c("Category","Savings")] <- c("Subtotal",tot_savings)
-  sav$Savings <- as.numeric(sav$Savings)
-  sav$Savings <- scales::dollar(sav$Savings)
-  
-  cat("------\n")
-  total_estimated_savings <- 105e9
-  total_receipts_posted <- .3
-  extrap_savings <- (tot_savings*(1/total_receipts_posted))
-  
-  cat(paste0("Estimated savings are currently ",scales::dollar(total_estimated_savings),". The doge.gov/savings website states that approximately ",total_receipts_posted*100,"% of receipts. Posted receipts total ",scales::dollar(tot_savings),". Extrapolating, this would suggest we should see ",scales::dollar(extrap_savings)," in savings. This is a difference of ",scales::dollar(total_estimated_savings-extrap_savings),".\n\n"))
-  
-  if(return=="all"){
-    print(tc)
-    cat("\n\n")
-    print(tl)
-    cat("\n\n")
-    print(tg)
-    cat("\n\n")
-    
-    print("Savings Table")
-    print(sav)
-    
-    print(lbc,n=100)
-    print(lbl,n=100)
-    print(lbg,n=100)
-    
-  }else if(return=="tc"){
-    return(tc)
-  }else if(return=="tl"){
-    return(tl)
-  }else if(return=="tg"){
-    return(tg)
-  }else if(return=="lbc"){
-    return(lbc)
-  }else if(return=="lbl"){
-    return(lbl)
-  }else if(return=="lbg"){
-    return(lbg)
+explode_urls <- function(y,k){
+  ## This only works for contracts and grants.
+  if(!(k %in% c("contracts","grants")))
+    return(y)
+  if(inherits(y,"data.frame")){
+    if(k=="contracts")
+      url <- y$fpds_link
+    else
+      url <- y$link
   }else{
-    stop("Invalid return value.")
+    url <- y
   }
+  u <- lapply(url,function(x){
+    q <- parse_url(x)$query
+    q[["url"]]  <- x
+   df <- as.data.frame(as.list(q), stringsAsFactors = FALSE)
+   return(df)
+  })
+  data <- do.call(bind_rows,u)
+  if(inherits(y,"data.frame"))
+    data <- cbind(y,data)
+  return(data)
 }
 
+ 

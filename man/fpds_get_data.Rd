@@ -7,7 +7,7 @@
 fpds_get_data(
   piid = NULL,
   return = "xml",
-  include_related = FALSE,
+  include_related = TRUE,
   verbose = FALSE
 )
 }
