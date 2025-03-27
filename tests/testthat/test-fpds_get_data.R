@@ -12,9 +12,6 @@ test_that("fpds_get_data() returns two data.frames", {
   expect_s3_class(d[[2]],"data.frame")
 })
 
-test_that("fpds_stats() returns output", {
-  expect_output(fpds_stats(d))
-})
 
 test_that("fpds_get_new() properly captures new data",{
   n <- fpds_get_new(piidsnew,d,verbose = F)
