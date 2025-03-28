@@ -169,7 +169,6 @@ check_doge_fpds_diff <- function(doge_data=NULL,
   f <- NULL
   nms <- c("PIID","modNumber","agencyID")
   
-  
   d <- doge_data[[type]][,nms]
   
   ## Generate master file
@@ -480,11 +479,28 @@ create_vendor_lookup <- function(DOGE,FPDS) {
 #' data_checker(F,"contracts","PIID")
 #' }
 data_checker <- function(data=NULL,sub=NULL,var=NULL){
+  
   subget <- function(data=NULL,sub=NULL,var=NULL){
-    if(!is.null(sub))
-      data <- data[[sub]]
-    if(!is.null(var))
-      data <- data[[var]]
+    if(!is.null(sub)){
+     if(sub=="all"){
+       dd <- NULL
+       for(nm in names(data)){
+         d <- data[[nm]]
+         d <- d[[var]]
+         if(is.null(dd))
+           dd <- d
+         else
+           dd <- c(dd,d)
+       }
+       data <- dd
+     }else{
+       data <- data[[sub]]
+     }
+    }else{
+      if(!is.null(var))
+        data <- data[[var]]  
+    }
+    
     return(data)  
   }
   
@@ -609,6 +625,25 @@ generate_unique_key <- function(unique_key=NULL,
     B <- unique_key
   }
   return(B)
+}
+
+pkg_merge <- function(old_data=NULL,
+                      new_data=NULL){
+  if(!inherits(old_data,c("govSDpkg","govSFpkg")) | 
+     !inherits(new_data,c("govSDpkg","govSFpkg")))
+    stop("pkg_merge() requires class govSDpkg or govFDpkg.")
+  
+  for(name in names(old_data)){
+    if(name %in% names(new_data)){
+      c <- clone_dataframe_structure(old_data[[name]],new_data[[name]])
+      old_data[[name]] <- unique(dplyr::bind_rows(c$SOURCE,c$CLONE))
+    }
+  }
+  # Add new subdata to old 
+  for(n in setdiff(names(new_data),names(old_data))){
+    old_data[[n]] <- new_data[[n]]
+  }
+  return(old_data)
 }
 
 xml_to_table <- function(x=NULL,
@@ -1005,45 +1040,19 @@ fpds_get_new <- function(doge_data=NULL,
                          fpds_data=NULL,
                          verbose=FALSE,
                          return="combined"){
-  
-  dd <- data_checker(doge_data,sub="contracts",var="PIID")
-  
-  if(inherits(fpds_data,"list")){
-    a <- unique(fpds_data$AWARDS$PIID)
-    i <- unique(fpds_data$IDV$PIID)
-    ai <- c(a,i)
-  }else{
-    stop("Expecting fpds data, formatted as a list with AWARDS and IDV.")
-  }
+
+  dd <- data_checker(doge_data,sub="all",var="PIID")
+  ai <- data_checker(fpds_data,sub="all",var="PIID")
   
   newPIID <- setdiff(dd,ai)
-  
+
   if(length(newPIID)>0)
     if(verbose==T)message(paste0("Found ",length(newPIID)," new entries. Starting download."))
   
   newData <- fpds_get_data(piid = newPIID,verbose=verbose)
-  
+
   if(return=="combined"){ 
-    if(!is.null(fpds_data$AWARDS) & !is.null(newData$AWARDS))
-      msa <- clone_dataframe_structure(fpds_data$AWARDS,newData$AWARDS)
-    else
-      msa <- newData$AWARDS
-    if(!is.null(fpds_data$IDV) & !is.null(newData$IDV))
-      msi <- clone_dataframe_structure(fpds_data$IDV,newData$IDV)
-    else
-      msi <- newData$IDV
-    
-    if(!is.null(msa))
-      nda <-  suppressMessages(dplyr::bind_rows(msa[[1]],msa[[2]]))
-    else
-      nda <- fpds_data$AWARDS
-    if(!is.null(msi))
-      ndi <-  suppressMessages(dplyr::bind_rows(msi[[1]],msi[[2]]))
-    else
-      ndi <- fpds_data$IDV
-    
-    nd <- list(AWARDS=nda,
-               IDV=ndi)
+    nd <- pkg_merge(fpds_data,newData)
   }else{
     nd <- newData
   }
