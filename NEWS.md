@@ -1,4 +1,5 @@
 # govScrapeR 0.0.3
+* 2025-03-30: Added usaspending.gov api call functionality to cross-check outlays.
 
 # govScrapeR 0.0.2
 
