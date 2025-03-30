@@ -7,6 +7,7 @@
 clean_and_match(
   FPDS_data = NULL,
   DOGE_data = NULL,
+  outlay_data = NULL,
   print_status = TRUE,
   verbose = F
 )

@@ -5,7 +5,6 @@
 \title{generate_unique_key}
 \usage{
 generate_unique_key(
-  unique_key = NULL,
   PIID = NULL,
   toptier_code = NULL,
   award_type = NULL,
@@ -14,11 +13,11 @@ generate_unique_key(
 )
 }
 \arguments{
-\item{unique_key}{A supplied unique key}
-
 \item{toptier_code}{An agency code}
 
 \item{award_type}{Either "contract","grant","IDV"}
+
+\item{unique_key}{A supplied unique key}
 
 \item{award_id}{A PIID number}
 }

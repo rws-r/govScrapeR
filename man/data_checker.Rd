@@ -4,7 +4,7 @@
 \alias{data_checker}
 \title{data_checker}
 \usage{
-data_checker(data = NULL, sub = NULL, var = NULL)
+data_checker(data = NULL, sub = NULL, var = NULL, unique = FALSE)
 }
 \arguments{
 \item{data}{Supplied data}
@@ -12,6 +12,8 @@ data_checker(data = NULL, sub = NULL, var = NULL)
 \item{sub}{A sub element of a list. Name.}
 
 \item{var}{A variable of a data.frame.}
+
+\item{unique}{Logical, to render unique values}
 }
 \value{
 Either character vector or data.frame.

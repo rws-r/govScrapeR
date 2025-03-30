@@ -111,45 +111,117 @@ fpds_api_call <- function(piid_val=NULL,
   return(x)
 }
 
-#---------Utility Functions -----------------
+usaspending_api_call <- function(unique_id=NULL,
+                                 type=NULL,
+                                 formatted=T,
+                                 limit=50,
+                                 page=1){
+  base_url <- "https://api.usaspending.gov/api/v2/"
+  
+  if(grepl("CONT_AWD",unique_id))
+    c <- "awards"
+  else if(grepl("CONT_IDV",unique_id))
+    c <- "idvs"
+  else
+    return(NA)
 
-build_unique_id <- function(data){
+  if(length(unique_id)>1)
+    unique_id <- paste('"',unique_id,'"',collapse=",",sep="")
   
-  if (!inherits(data, "data.frame"))
-    stop("Please supply a dataframe.")
-  
-  df <- apply(data, 1, function(row){
-    PIID <- row["PIID"]
-    agencyID <- row["agencyID"]
-    type <- row["contract_type"]
+  runcall <- function(base_url=base_url,
+                      page=page,
+                      type=type,
+                      unique_id=unique_id,
+                      limit=limit){
     
-    if(type == "award"){
-      if("idvPIID" %in% names(row) & "idvAgencyID" %in% names(row)){
-        idvPIID <- row["idvPIID"]
-        idvAgencyID <- row["idvAgencyID"]
-      }else{
-        idvPIID <- NA
-        idvAgencyID <- NA
-      }
+    if(type=="profile"){
+      sub <- paste0(c,"/",unique_id)
+      method <- "GET"
+    }else if(type=="funding"){
+      sub <- paste0("/",c,"/funding/")
+      method <- "POST"
+      body <- list(
+        award_id = unique_id,
+        limit = limit,
+        page = page,
+        sort = "reporting_fiscal_date",
+        order = "asc"
+      )
+    }else if(type=="funding_rollup"){
+      sub <- paste0("/",c,"/funding_rollup/")
+      method <- "POST"
+      body <- list(
+        award_id = unique_id,
+        limit = limit
+      )
+    }else if(type=="download"){
+      sub <- paste0("/download/",c,"/")
+      method <- "POST"
+      body <- list(
+        filters = list(
+          award_ids = list(
+            unique_id
+          ),
+          limit = limit
+        )
+      )
+    }else if(type=="accounts"){
+      sub <- paste0("/",c,"/accounts/")
+      method <- "POST"
+      body <- list(
+        award_id = unique_id,
+        limit = 100
+      )
+    }else{
+      stop("Error in type value.")
     }
     
-    if(type == "award"){
-      if(is.na(idvPIID) || is.na(idvAgencyID)) {
-        suffix <- "-NONE-_-NONE-"
-      } else {
-        suffix <- paste0(idvPIID, "_", idvAgencyID)
-      }
-      usalink <- paste0("https://www.usaspending.gov/award/CONT_AWD_", PIID, "_", agencyID, "_", suffix)
-    } else if(type == "IDV"){
-      usalink <- paste0("https://www.usaspending.gov/award/CONT_IDV_", PIID, "_", agencyID)
-    } else {
-      usalink <- NA
-    }
-    return(usalink)
-  })
+    url <- paste0(base_url,sub)
+    if(method=="GET")
+      response <- GET(url)
+    else if(method=="POST")
+      response <- POST(url,
+                       body = body,
+                       encode = "json",
+                       content_type_json())
+    else
+      stop("INVALID METHOD")
+    
+    response <- fromJSON(content(response,"text",encoding = "UTF-8"))
+    return(response)
+  }
   
-  return(df)
+  response <- runcall(base_url=base_url,
+                      page=page,
+                      type=type,
+                      unique_id=unique_id,
+                      limit=limit)
+  
+  results <- list()
+  if(!is.null(response$results))
+    results[[1]] <- response$results
+
+  if(formatted && !is.null(response$page_metadata$hasNext)){
+    while(response$page_metadata$hasNext==TRUE){
+      page <- page+1
+      response <- runcall(base_url=base_url,
+                          page=page,
+                          type=type,
+                          unique_id=unique_id,
+                          limit=limit)
+      if(!is.null(response$results))
+        results[[length(results)+1]] <- response$results
+    }
+  }
+  
+  if(formatted){
+    results <- do.call(rbind,results)
+  }
+  
+  return(results)
 }
+
+#---------Utility Functions -----------------
 
 charclean <- function(vec){
   vec <- vec %>%
@@ -283,42 +355,56 @@ check_xml_type <- function(doc,return="check") {
 
 clean_and_match <- function(FPDS_data=NULL,
                             DOGE_data=NULL,
+                            outlay_data=NULL,
                             print_status=TRUE,
                             verbose=F){
   
-  nma <- c("PIID","modNumber","agencyID","idvAgencyID")
+  nma <- c("PIID","modNumber","agencyID","idvPIID")
   
-  DC <- DOGE_data$contracts
-  FA <- FPDS_data$AWARD
-  FI <- FPDS_data$IDV
-  FO <- FPDS_data$OTHERTRANSACTIONAWARD
+  # Set up data, merge all FPDS
+  ## NOTE: DOGE recently added a bunch of "Unavailable for legal reson" PIIDs,
+  ## which creates problems for left_join. We need to subset them out, and then
+  ## throw them back in via bind_rows.
   
-  FF <- clone_dataframe_structure(FA,FI)
-  FF <- dplyr::bind_rows(FF[[1]],FF[[2]])
-  FF <- clone_dataframe_structure(FF,FO)
-  FF <- dplyr::bind_rows(FF[[1]],FF[[2]])
+  D <- DOGE_data$contracts
+  DC <- D[which(grepl("unavailable",D$DOGE_PIID,ignore.case = T)==F),]
+  DCU <- D[which(grepl("unavailable",D$DOGE_PIID,ignore.case = T)),]
   
-  # Clean any extraneous PIIDS.
-  PIIDS_extra <- setdiff(unique(FF$PIID),unique(DC$PIID))
-  FF <- FF[!(FF$PIID %in% PIIDS_extra),]
-  # Identify any missing FPDS values.
-  PIIDS_missing <- setdiff(unique(DC$PIID),unique(FF$PIID))
-  PIIDS_missing <- PIIDS_missing[!is.na(PIIDS_missing)]
-  if(verbose==TRUE | print_status==TRUE)message(paste("It looks like FPDS is missing the following values:",paste(PIIDS_missing,collapse=",")))
+  for(i in 1:length(FPDS_data)){
+    if(i==1){
+      FP <- FPDS_data[[i]]
+    }else{
+      FPp <- clone_dataframe_structure(FP,FPDS_data[[i]])[[2]]
+      FP <- bind_rows(FP,FPp)
+    }
+  }
   
+  ## Get unmatched PIIDs
+  dd <- data_checker(DC,sub="all",var="PIID",unique=T)
+  ai <- data_checker(FP,sub="all",var="PIID",unique=T)
+  unmatched <- setdiff(dd,ai)
+  if(verbose==TRUE | print_status==TRUE)message(paste("It looks like FPDS is missing the following values:",paste(unmatched,collapse=",")))
   
-  x <- left_join(DC,FF,by=nma, suffix = c("_doge","_fpds"))
+  x <- left_join(DC,FP,by=nma, suffix = c("_doge","_fpds"))
+
+  x$unique_id <- apply(x,1,function(x){
+    generate_unique_key(PIID = x[["PIID"]],
+                        toptier_code = x[["agencyID"]],
+                        award_type = x[["contract_type"]],
+                        idvPIID = x[["idvPIID"]],
+                        idvAgency = x[["idvAgencyID_fpds"]])
+  })
   
-  UPDC <- unique(DC$PIID)
-  UPFF <- unique(FF$PIID)
-  UPx <- unique(x$PIID)
+  UPDC <- dd
+  UPFF <- ai
+  UPx <- data_checker(x,"all","PIID",unique=T)
   
   NADC <- length(DC$PIID[is.na(DC$PIID)])
-  NAFF <- length(FF$PIID[is.na(FF$PIID)])
+  NAFF <- length(FP$PIID[is.na(FP$PIID)])
   NAx <- length(x$PIID[is.na(x$PIID)])
   
   NRDC <- nrow(DC)
-  NRFF <- nrow(FF)
+  NRFF <- nrow(FP)
   NRx <- nrow(x)
   
   if(print_status==TRUE){
@@ -328,6 +414,13 @@ clean_and_match <- function(FPDS_data=NULL,
  MERGED Unique PIIDs: ",length(UPx)," / Rows: ",NRx," / NA PIIDs: ",NAx)
   }
   
+  if(!is.null(outlay_data)){
+    # Ignore NA values because they create join problems and are irrelevant.
+    outlay_data <- outlay_data[!is.na(outlay_data$unique_id),]
+    x <- left_join(x,outlay_data,by="unique_id")
+  }
+  x <- bind_rows(x,DCU)
+  class(x) <- c("govSDdatM",class(x))
   return(x)
   
 }
@@ -471,6 +564,7 @@ create_vendor_lookup <- function(DOGE,FPDS) {
 #' @param data Supplied data
 #' @param sub A sub element of a list. Name.
 #' @param var A variable of a data.frame.
+#' @param unique Logical, to render unique values
 #' @importFrom dplyr case_when
 #'
 #' @returns Either character vector or data.frame.
@@ -478,7 +572,7 @@ create_vendor_lookup <- function(DOGE,FPDS) {
 #' @examples \dontrun{
 #' data_checker(F,"contracts","PIID")
 #' }
-data_checker <- function(data=NULL,sub=NULL,var=NULL){
+data_checker <- function(data=NULL,sub=NULL,var=NULL,unique=FALSE){
   
   subget <- function(data=NULL,sub=NULL,var=NULL){
     if(!is.null(sub)){
@@ -500,7 +594,8 @@ data_checker <- function(data=NULL,sub=NULL,var=NULL){
       if(!is.null(var))
         data <- data[[var]]  
     }
-    
+    if(unique==TRUE)
+      data <- unique(data)
     return(data)  
   }
   
@@ -512,6 +607,7 @@ data_checker <- function(data=NULL,sub=NULL,var=NULL){
       "govSDdat" = subget(data=data, sub=NULL, var=var),
       "govSFpkg" = subget(data=data, sub=sub, var=var),
       "govSFdat" = subget(data=data, sub=NULL, var=var),
+      "govSDdatM" = subget(data=data, sub=NULL, var=var),
       stop("Error, invalid data. Provide data created by govScrapeR:: *_get_data() functions.")
     )
   }
@@ -576,53 +672,49 @@ explode_urls <- function(y,k){
 #' \dontrun{
 #' generate_unique_key(PIID="XXX999333",toptier_code="0900",award_type="grant")
 #' }
-generate_unique_key <- function(unique_key=NULL,
-                                PIID=NULL,
+generate_unique_key <- function(PIID=NULL,
                                 toptier_code=NULL,
                                 award_type=NULL,
                                 idvPIID=NULL,
                                 idvAgency=NULL){
   
+  if(any(is.na(PIID),is.na(toptier_code),is.na(award_type)))
+    return(NA)
   
-  idvPIID <- lapply(idvPIID,function(x){
-    if(is.null(x) || is.na(x) || x=="NA"){
-      "_-NONE-_-NONE-"
-    }else{
-      paste0("_",x)
-    }
-  })
+  if(is.null(idvPIID) || is.na(idvPIID) || idvPIID=="NA"){
+    idvPIID <- "_-NONE-_-NONE-"
+  }else{
+    idvPIID <- paste0("_",idvPIID)
+  }
   
-  idvAgency <- lapply(idvAgency,function(x){
-    if(is.null(x) || is.na(x) || x=="NA"){
-      NULL
-    }else{
-      paste0("_",x)
-    }
-  })
-  
+  if(is.null(idvAgency) || is.na(idvAgency) || idvAgency=="NA"){
+    idvAgency <- NULL
+  }else{
+    idvAgency <- paste0("_",idvAgency)
+  }
   
   if(is.numeric(toptier_code))
     sprintf("%04d",toptier_code)
-  if(is.null(unique_key)){
-    if(!is.null(PIID) & !is.null(toptier_code)){
-      if(is.null(award_type))
-        stop("Error: award_type must be supplied.")
-      if(award_type=="grant")
-        pref <- "ASST_NON_"
-      else if(award_type=="contract")
-        pref <- "CONT_AWD_"
-      else if(award_type=="IDV")
-        pref <- "CONT_IDV_"
-      else
-        stop("Invalid award_type")
-      if(award_type=="IDV")
-        unique_award_id <- paste0(pref,PIID,"_",toptier_code)
-      else
-        unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,idvAgency)
-      B <- unique_award_id
-    }
-  }else{
-    B <- unique_key
+  if(!is.null(PIID) & !is.null(toptier_code)){
+    if(is.null(award_type))
+      stop("Error: award_type must be supplied.")
+    if(is.na(award_type))
+      pref <- NA
+    if(award_type=="grant")
+      pref <- "ASST_NON_"
+    else if(award_type=="award")
+      pref <- "CONT_AWD_"
+    else if(award_type=="IDV")
+      pref <- "CONT_IDV_"
+    else
+      pref <- NA
+    if(is.na(pref))
+      unique_award_id <- NA
+    else if(award_type=="IDV")
+      unique_award_id <- paste0(pref,PIID,"_",toptier_code)
+    else
+      unique_award_id <- paste0(pref,PIID,"_",toptier_code,idvPIID,idvAgency)
+    B <- unique_award_id
   }
   return(B)
 }
@@ -788,6 +880,9 @@ doge_get_data <- function(selectGrants=TRUE,
         jd <- rbind(jd,jjd)
       }
     }
+    
+    # Rename piid to DOGE_PIID to preserve distinction from link version (PIID)
+    colnames(jd)[colnames(jd)=="piid"] <- "DOGE_PIID"
     
     # Explode url to gather additional information
     if(verbose==T)message("Extracting fpds_link components...")
@@ -1061,3 +1156,184 @@ fpds_get_new <- function(doge_data=NULL,
   
 }
 
+##------ Analysis Functions --------
+
+#' validate_savings
+#'
+#' A utility function to take merged data (clean_and_match()) and run
+#' mathematical and comparative functions to enable cross-referencing with
+#' DOGE-supplied data.
+#' 
+#' @param merged_data Data created by clean_and_match()
+#' @param outlay_data Include data created by get_usaspending_outlay()
+#'
+#' @returns A data.frame
+#' @export 
+#'
+#' @examples 
+#' \dontrun{
+#' validate_savings(M,O)
+#' }
+#' 
+validate_savings <- function(merged_data=NULL,
+                             outlay_data=NULL){
+  d <- data_checker(merged_data)
+  n <- names(d)
+  # Identify NA to 0 cols
+  nnms <- c('obligatedAmount',
+  'baseAndExercisedOptionsValue',
+  'baseAndAllOptionsValue',
+  'totalObligatedAmount',
+  'totalBaseAndExercisedOptionsValue',
+  'totalBaseAndAllOptionsValue')
+  if("gross_outlay_amount" %in% n)
+    nnms <- c(nnms,"gross_outlay_amount")
+  
+  # Select relevant cols 
+  d <- d[,c('PIID',
+            'value',
+            'fpds_status',
+            'savings',
+            'unique_id',nnms)]
+  
+  # Convert NA to 0 for calv, skipping gross_outlay_amount
+  nnmsf <- nnms[nnms!="gross_outlay_amount"]
+  d[nnmsf][is.na(d[nnmsf])] <- 0
+
+  # Possible value amts: , baseAndAllOptionsValue, totalBaseAndAllOptionsValue
+  calc_fpds_value <- pmax(d$baseAndAllOptionsValue,d$totalBaseAndAllOptionsValue)
+  # Possible outlay amts: obligatedAmount, totalObligatedAmount, baseAndExercisedOptionsValue, totalBaseAndExercisedOptionsValue
+  calc_fpds_outlay <- pmax(d$obligatedAmount, d$totalObligatedAmount,d$baseAndExercisedOptionsValue, d$totalBaseAndExercisedOptionsValue)
+  # Calculate savings
+  calc_fpds_savings <- calc_fpds_value-calc_fpds_outlay
+  
+  d$calc_fpds_value <- round(calc_fpds_value)
+  d$calc_fpds_outlay <- round(calc_fpds_outlay)
+  d$calc_fpds_savings <- round(calc_fpds_savings)
+  d$calc_usaspending_savings <- d$calc_fpds_value-d$gross_outlay_amount
+  d$fpds_value_match <- d$value==d$calc_fpds_value
+  d$fpds_savings_match <- d$savings==d$calc_fpds_savings
+  d$outlay_match <- d$calc_fpds_outlay==d$gross_outlay_amount
+  
+  return(d)
+}
+
+#' get_usaspending_outlay
+#' 
+#' A utility function to get outlay values from usaspending.gov. 
+#'
+#' @param id A unique id created via clean_and_match / generate_unique_key
+#' @param returnTable Logical, whether to return aggregated numeric value, or complete table.
+#' @importFrom dplyr slice_tail
+#'
+#' @returns Either a numeric value, or a data.frame.
+#' @export
+#'
+#' @examples 
+#' \dontrun{
+#' get_usaspending_outlay(id="XXXXX-XXXXXX",returnTable=F)
+#' }
+get_usaspending_outlay <- function(id=NULL,
+                                   returnTable=FALSE,
+                                   returnRaw=FALSE){
+  x <- usaspending_api_call(unique_id = id,
+                            type="funding",
+                            formatted=T,
+                            limit = 100,
+                            page=1)
+
+  if(returnRaw==T)
+    return(x)
+  
+  if(!is.null(x$results)){
+    x <- x$results
+  }
+  if(length(x)==0)
+    return(NA)
+  
+  # Arrange by date, then capture the last element (tail)
+  y <- x[order(x$reporting_fiscal_year, x$reporting_fiscal_month), ]
+  y <- do.call(rbind, lapply(split(y, y$reporting_fiscal_year), function(df) tail(df, 1)))
+
+  ## If multiple federal accounts
+  if(length(unique(x$federal_account))>1){
+    
+    y <- x[with(x, ave(reporting_fiscal_month, federal_account, reporting_fiscal_year, 
+                       FUN = function(x)if(all(is.na(x))) NA else max(x, na.rm = TRUE)) == reporting_fiscal_month), ]
+   # y <- aggregate(gross_outlay_amount ~ federal_account + reporting_fiscal_year, data = y_filtered, FUN = function(x) sum(x, na.rm = TRUE))
+  }
+  
+  if(returnTable==TRUE)
+    return(y)
+  else
+    y <- y$gross_outlay_amount
+  
+  y <- sum(y,na.rm = T)
+  
+  return(y)
+}
+
+#' get_usaspending_outlay_loop
+#' 
+#' A utility function to run get_usaspending_outlay on a loop of provided unique_ids. 
+#'
+#' @param merged_data Data created by clean_and_match(). Cycles through unique_ids in data.
+#'
+#' @returns A data.frame
+#' @export 
+#'
+#' @examples \dontrun{
+#' get_usaspending_outlay_loop(M)
+#' }
+#' 
+get_usaspending_outlay_loop <- function(merged_data=NULL,
+                                        progress_style=1){
+  ids <- unique(data_checker(merged_data,"all","unique_id"))
+  ids <- ids[!is.na(ids)]
+
+  df <- data.frame(unique_id=NULL,
+                   gross_outlay_amount=NULL)
+  et <- NULL
+
+  st <- Sys.time()
+  if(progress_style==1)pb <- txtProgressBar(min = 0, max = length(ids), style = 3)
+  L <- length(ids)
+  for(i in 1:L){
+    # Get estimated time
+    ct <- Sys.time()
+    et <- as.numeric(ct - st)
+    tet <- (et / i) * L
+    tr <- tet - et
+    time_remaining <- paste0(round(tr/60),":",sprintf("%0.0f", tr %% 60))
+    
+      
+    if(progress_style==2)cat(paste0("\r ",i,"/",L," (",paste0(round(i/L,4)*100,"%"),") | ",time_remaining," | ",ids[i]))
+    #message(paste0("Trying ",ids[i]))
+    tryCatch({
+      o <- get_usaspending_outlay(ids[i])
+      df[i,"unique_id"] <- ids[i]
+      df[i,"gross_outlay_amount"] <- o
+    },
+      error = function(e) {
+        message(sprintf("Error for ID %s: %s", ids[i], e$message,". Sleeping for 10 sec and trying again."))
+        Sys.sleep(10)
+        tryCatch({
+          o <- get_usaspending_outlay(ids[i])
+          df[i,"unique_id"] <- ids[i]
+          df[i,"gross_outlay_amount"] <- o
+        },
+        error = function(e) {
+          message(sprintf("Error for ID %s: %s", ids[i], e$message,". Sleeping for 10 sec and trying again."))
+          return(NULL)
+        })
+      })
+
+    if (i %% 10 == 0)
+      saveRDS(df,"test.RDS")
+    if(progress_style==1)setTxtProgressBar(pb,i)
+    Sys.sleep(.5)
+  }
+  if(progress_style==1)close(pb)
+
+  return(df)
+}
