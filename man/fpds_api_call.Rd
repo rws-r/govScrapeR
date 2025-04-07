@@ -4,10 +4,10 @@
 \alias{fpds_api_call}
 \title{fpds_api_call}
 \usage{
-fpds_api_call(piid_val = NULL, start = NULL, return = "xml", verbose = FALSE)
+fpds_api_call(piid = NULL, start = NULL, return = "xml", verbose = FALSE)
 }
 \arguments{
-\item{piid_val}{Supplied PIID lookup}
+\item{piid}{Supplied PIID lookup}
 
 \item{start}{For pagination, start value}
 

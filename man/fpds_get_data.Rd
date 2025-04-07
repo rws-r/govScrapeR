@@ -16,6 +16,8 @@ fpds_get_data(
 
 \item{return}{If "raw", output raw HTML file.}
 
+\item{include_related}{Logical, whether to include related subawards.}
+
 \item{verbose}{Logical, to display progressbar.}
 }
 \value{

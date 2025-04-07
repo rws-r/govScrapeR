@@ -17,6 +17,8 @@ clean_and_match(
 
 \item{DOGE_data}{Supplied data from DOGE}
 
+\item{outlay_data}{A dataset from get_usaspending_outlay(), to add to merge file.}
+
 \item{print_status}{Logical, whether to return feedback}
 
 \item{verbose}{Logical, whether to return messages}

@@ -20,6 +20,8 @@ doge_api_call(
 \item{limit}{Items per page; defaults to 500}
 
 \item{pnum}{Page number to start at}
+
+\item{verbose}{Logical, whether to provide feedback.}
 }
 \value{
 A dataframe

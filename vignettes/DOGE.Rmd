@@ -34,7 +34,8 @@ If desired, you can save data to an .RDS file by flagging `saveFile=TRUE`, and p
 ## Getting FPDS Data
 The `contracts` table has an `fpds_link` column, allowing the user to click through to the relevant entry on fpds.gov. There appear to be inconsistencies. Therefore, to assist in validating published data with government data, you can use `fpds_get_data()` to query the ATOM feed for each contract.
 ```{r}
-f <- fpds_get_data(piid=c("9523ZY21P0045","9531CB24A0009"))
+f <- readRDS("../inst/extdata/FPDS_downloads/fpds.RDS")
+# f <- fpds_get_data(piid=c("9523ZY21P0045","9531CB24A0009"))
 names(f)
 ```
 Two types of contracts are identified in DOGE data: awards and IDV. Information about these, and other variables are available in the FPDS data dictionary: https://www.fpds.gov/downloads/Version_1.5_specs/FPDS_DataDictionary_V1.5.pdf. Because they are structured slightly differently, `fpds_get_data()` will return a named list, with relevant dataframes. 

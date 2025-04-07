@@ -26,6 +26,8 @@ doge_get_data(
 \item{limit}{Defaults to 500; how many entries per page.}
 
 \item{pageNumStart}{Which page to start on. Defaults to 1.}
+
+\item{verbose}{Logical, whether to provide feedback.}
 }
 \value{
 A data.frame

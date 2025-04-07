@@ -4,7 +4,7 @@
 \alias{create_vendor_lookup}
 \title{create_vendor_lookup}
 \usage{
-create_vendor_lookup(DOGE, FPDS)
+create_vendor_lookup(DOGE = NULL, FPDS = NULL)
 }
 \arguments{
 \item{DOGE}{supplied DOGE data}

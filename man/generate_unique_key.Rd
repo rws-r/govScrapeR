@@ -13,13 +13,15 @@ generate_unique_key(
 )
 }
 \arguments{
+\item{PIID}{Character string, the PIID value of an award.}
+
 \item{toptier_code}{An agency code}
 
 \item{award_type}{Either "contract","grant","IDV"}
 
-\item{unique_key}{A supplied unique key}
+\item{idvPIID}{Character string, the IDV PIID value of an award.}
 
-\item{award_id}{A PIID number}
+\item{idvAgency}{Character string, the agency number of an IDV.}
 }
 \value{
 A character string

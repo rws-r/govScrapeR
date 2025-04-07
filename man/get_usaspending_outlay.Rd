@@ -4,12 +4,21 @@
 \alias{get_usaspending_outlay}
 \title{get_usaspending_outlay}
 \usage{
-get_usaspending_outlay(id = NULL, returnTable = FALSE, returnRaw = FALSE)
+get_usaspending_outlay(
+  id = NULL,
+  returnTable = FALSE,
+  returnRaw = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{id}{A unique id created via clean_and_match / generate_unique_key}
 
 \item{returnTable}{Logical, whether to return aggregated numeric value, or complete table.}
+
+\item{returnRaw}{Logical, whether to return raw data before processing.}
+
+\item{verbose}{Logical, whether to provide feedback.}
 }
 \value{
 Either a numeric value, or a data.frame.
