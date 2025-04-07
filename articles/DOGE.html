@@ -80,7 +80,7 @@ is then cleaned, and returned in table format.</p>
 <span><span class="co">#df &lt;- doge_get_data(verbose=T,saveFile = F)</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"../inst/extdata/DOGE/doge.RDS"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "grants"    "contracts" "leases"    "payments"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "grants"    "contracts" "leases"</span></span></code></pre></div>
 <p>As of the writing of this vignette, DOGE displayed data on three
 groups: contracts, grants, and real-estate. Each group continas
 different table structure, so the data is returned in a named list,
@@ -101,8 +101,8 @@ validating published data with government data, you can use
 <code><a href="../reference/fpds_get_data.html">fpds_get_data()</a></code> to query the ATOM feed for each
 contract.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fpds_get_data.html">fpds_get_data</a></span><span class="op">(</span>piid<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9523ZY21P0045"</span>,<span class="st">"9531CB24A0009"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Successful iterations: 2  | Failed iterations:  0 \n\nFailed at:"</span></span>
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"../inst/extdata/FPDS_downloads/fpds.RDS"</span><span class="op">)</span></span>
+<span><span class="co"># f &lt;- fpds_get_data(piid=c("9523ZY21P0045","9531CB24A0009"))</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "AWARD" "IDV"</span></span></code></pre></div>
 <p>Two types of contracts are identified in DOGE data: awards and IDV.

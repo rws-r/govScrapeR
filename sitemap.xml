@@ -7,14 +7,18 @@
 <url><loc>https://rws-r.github.io/govScrapeR/authors.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/index.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/news/index.html</loc></url>
-<url><loc>https://rws-r.github.io/govScrapeR/reference/browser.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/charclean.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/check_xml_type.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/clean_and_match.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/clone_dataframe_structure.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/convertability.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/create_vendor_lookup.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/data_checker.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/doge_api_call.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/doge_get_data.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/doge_get_schema.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/explode_urls.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/extract_outlays.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/fpds_api_call.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/fpds_get_data.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/fpds_get_new.html</loc></url>
@@ -22,9 +26,9 @@
 <url><loc>https://rws-r.github.io/govScrapeR/reference/get_usaspending_outlay.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/get_usaspending_outlay_loop.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/index.html</loc></url>
-<url><loc>https://rws-r.github.io/govScrapeR/reference/oa_query.html</loc></url>
-<url><loc>https://rws-r.github.io/govScrapeR/reference/oa_summary.html</loc></url>
-<url><loc>https://rws-r.github.io/govScrapeR/reference/set_oa_api_key.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/pkg_merge.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/usaspending_api_call.html</loc></url>
 <url><loc>https://rws-r.github.io/govScrapeR/reference/validate_savings.html</loc></url>
+<url><loc>https://rws-r.github.io/govScrapeR/reference/xml_to_table.html</loc></url>
 </urlset>
 
