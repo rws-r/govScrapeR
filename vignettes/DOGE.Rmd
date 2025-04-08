@@ -17,33 +17,38 @@ knitr::opts_chunk$set(
 ```{r setup,echo=FALSE}
 library(govScrapeR)
 ```
-This package has two main operations: scraping data from doge.gov, and pulling data queries from fpds.gov. The primary functions for each are `doge_get_data()` and `fpds_get_data()`, respectively. Several convenience functions are provided on top of these two. 
+This package is designed primarily to provide transparency for DOGE by pulling data from the api at doge.gov, and matching DOGE data with FPDS data (fpds.gov), and data from usaspending.gov. The primary functions are `doge_get_data()` and `fpds_get_data()`, with additional functionality for accessing data from usaspending.gov. A few convenience functions are provided on top of these. 
 
 ## Getting DOGE Data
-As of now, the scraper captures data from doge.gov/savings. It relies on ``rvest` and reads dynamically-generated scripts. The data is then cleaned, and returned in table format. 
+To get DOGE data, simply run `doge_get_data()`, saving output to a variable. Default settings capture contract, grant, and lease data from doge.gov/savings. Individual subsets can be selected via parameters. 
 ```{r,echo=TRUE}
 
 #df <- doge_get_data(verbose=T,saveFile = F)
 df <- readRDS("../inst/extdata/DOGE/doge.RDS")
 names(df)
 ```
-As of the writing of this vignette, DOGE displayed data on three groups: contracts, grants, and real-estate. Each group continas different table structure, so the data is returned in a named list, comprised of three dataframes. The key columns for reference are `ceiling_value` and `value`. These correspond to "Total Value" and "Savings" tabs on doge.gov/savings.
+Each subgroup is built with different table structures, so data is returned in a named list, comprised of three dataframes. The key columns for analysis are `ceiling_value` and `value`. These correspond to "Total Value" and "Savings" tabs on doge.gov/savings.
 
 If desired, you can save data to an .RDS file by flagging `saveFile=TRUE`, and providing a directory location to the `saveDir` parameter. 
 
 ## Getting FPDS Data
-The `contracts` table has an `fpds_link` column, allowing the user to click through to the relevant entry on fpds.gov. There appear to be inconsistencies. Therefore, to assist in validating published data with government data, you can use `fpds_get_data()` to query the ATOM feed for each contract.
+Data from doge.gov is somewhat limited, in that it provides summary information, but lacks the detail offered on fpds.gov. You can manually follow links via doge.gov, or you can pass PIID values from `doge_get_data()` to `fpds_get_data()` to initiate a loop call to the FPDS feed. This will return all transaction entries from FPDS, allowing for deeper analysis of contract cancellations. 
 ```{r}
 f <- readRDS("../inst/extdata/FPDS_downloads/fpds.RDS")
 # f <- fpds_get_data(piid=c("9523ZY21P0045","9531CB24A0009"))
 names(f)
 ```
-Two types of contracts are identified in DOGE data: awards and IDV. Information about these, and other variables are available in the FPDS data dictionary: https://www.fpds.gov/downloads/Version_1.5_specs/FPDS_DataDictionary_V1.5.pdf. Because they are structured slightly differently, `fpds_get_data()` will return a named list, with relevant dataframes. 
+Just as `doge_get_data()` returns a named list with multiple dataframes, so `fpds_get_data()` captures multiple types of data, with different structures. The most common are awards, and IDVs. Information about these, and other variables are available in the FPDS data dictionary: https://www.fpds.gov/downloads/Version_1.5_specs/FPDS_DataDictionary_V1.5.pdf. 
 
 As a note, to avoid overloading memory, FPDS data is written to a `tempdir()` location, then merged at the end of the function. 
 
 ## Updating FPDS Data
-The data from doge.gov/savings is periodically updated. When it is, you can use `fpds_get_new()` with the new DOGE data, and an existing FPDS data object to identify and query only the new additions to the DOGE data. This alleviates unnecessarily long queries every time there's a change on doge.gov/savings.
+Due to the necessity of iteration, running `fpds_get_data()` can be a time consuming process when running thousands of PIIDs. To assist in easing the demand when new data is posted at doge.gov, you can use `fpds_get_new()`. This function will take new DOGE data and an existing FPDS data object, and will identify and query only the new additions to the DOGE data. This alleviates unnecessarily long queries every time there's a change on doge.gov/savings.
 
+## Matching DOGE Data
+FPDS data captures all transactions for a particular award, or IDV. This means that you may end up with anywhere from a few to hundreds of rows. Identifying which transaction doge.gov is referring to can be challenging. To assist in this, you can run `clean_and_match()` to pair DOGE and FPDS data. 
 
+It's additionally important to gather data on outlays. Outlays are funds actually spent by agencies, against an obligation. This enables one to validate claimed savings against remaining contract value. To capture this data, you need to access the USASpending api. This is done conveniently through `get_usaspending_outlay()` or `get_usaspending_outlay_loop()` for multiple PIID values. 
 
+## Development
+This package is under development, and suggestions / contributions are welcome. 
