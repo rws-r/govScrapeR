@@ -474,6 +474,8 @@ check_xml_type <- function(doc,
 #' @importFrom dplyr left_join
 #' @importFrom dplyr join_by
 #' @importFrom dplyr mutate
+#' @importFrom stats as.formula
+#' @importFrom stats aggregate
 #'
 #' @returns A merged dataframe.
 #' @export
@@ -543,13 +545,58 @@ clean_and_match <- function(FPDS_data=NULL,
  FPDS Unique PIIDs: ",length(UPFF)," / Rows: ",NRFF," / NA PIIDs: ",NAFF,"
  MERGED Unique PIIDs: ",length(UPx)," / Rows: ",NRx," / NA PIIDs: ",NAx)
   }
-  
+
   if(!is.null(outlay_data)){
-    # Ignore NA values because they create join problems and are irrelevant.
-    outlay_data <- outlay_data[!is.na(outlay_data$unique_id),]
-    x <- left_join(x,outlay_data,by="unique_id")
+    
+    ## Trim out NA values and flag duplicates to assist with merges. 
+    DCNA <- x[is.na(x$unique_id),]
+    x <- x[!is.na(x$unique_id),]
+    
+    OD <- lapply(names(outlay_data), function(nm){
+      if(!is.null(outlay_data[[nm]])){
+        OD <- outlay_data[[nm]]
+        # Ignore NA values because they create join problems and are irrelevant.
+        OD <- OD[!is.na(OD$id),]
+        # Only aggregate AWARD data
+        if(!("award_id" %in% names(OD))){
+          ## Check for full table outlay data. If present, build summary table.
+          if(length(OD)>2){
+            exclude_vars <- c("reporting_fiscal_month",
+                              "reporting_fiscal_quarter",
+                              "reporting_fiscal_year",
+                              "federal_account","disaster_emergency_fund_code","account_title",
+                              "object_class",
+                              "object_class_name",
+                              "program_activity_code",
+                              "program_activity_name",
+                              "is_quarterly_submission")
+            target_vars <- c("gross_outlay_amount","transaction_obligated_amount")
+            nod <- names(OD)
+            aggs <- lapply(target_vars, function(tv){
+              grp_vrs <- nod[!nod %in% c(exclude_vars,target_vars[!target_vars %in% tv])]
+              f <- as.formula(paste(tv, "~", paste(grp_vrs, collapse = " + ")))
+              aggregate(f, data = OD, FUN = sum, na.rm = TRUE)
+            })
+            OD <- Reduce(function(xo, yo) merge(xo, yo, by = nod[!nod %in% c(exclude_vars,target_vars)], all = TRUE), aggs)
+          }else{
+            stop("Complete this logic.")
+          }
+        }else{
+          OD <- OD[,c(1:25)]
+        }
+      }
+    })
+    
+    ## Use bind_rows to smash into a master dataframe.
+    OD <- bind_rows(OD)
+    
+    x <- left_join(x,OD,join_by("unique_id"=="id"))
   }
-  x <- bind_rows(x,DCU)
+  
+  if(!is.null(outlay_data))
+    x <- bind_rows(x,DCU,DCNA)
+  else
+    x <- bind_rows(x,DCU)
   class(x) <- c("govSDdatM",class(x))
   return(x)
   
@@ -841,17 +888,8 @@ extract_outlays <- function(x=NULL,
                             type=NULL){
   
   if(type=="AWARD"){
-    # Arrange by date, then capture the last element (tail)
-    y <- x[order(x$reporting_fiscal_year, x$reporting_fiscal_month), ]
-    y <- do.call(rbind, lapply(split(y, y$reporting_fiscal_year), function(df) tail(df, 1)))
-    
-    ## If multiple federal accounts
-    if(length(unique(x$federal_account))>1){
-      
-      y <- x[with(x, ave(reporting_fiscal_month, federal_account, reporting_fiscal_year, 
-                         FUN = function(x)if(all(is.na(x))) NA else max(x, na.rm = TRUE)) == reporting_fiscal_month), ]
-      # y <- aggregate(gross_outlay_amount ~ federal_account + reporting_fiscal_year, data = y_filtered, FUN = function(x) sum(x, na.rm = TRUE))
-    }
+    y <- x[with(x, ave(reporting_fiscal_month, id, federal_account, reporting_fiscal_year, 
+                       FUN = function(x)if(all(is.na(x))) NA else max(x, na.rm = TRUE)) == reporting_fiscal_month), ]
   }else{
     y <- x
   }
@@ -1504,10 +1542,12 @@ get_usaspending_outlay <- function(id=NULL,
   if(length(x)==0)
     return(NA)
   
+  x <- cbind(id,x)
+  
   y <- extract_outlays(x,type=type)
   # Reset rows and add id
   rownames(y) <- NULL
-  y <- cbind(id,y)
+
   
   
   if(returnTable==TRUE){
