@@ -1,3 +1,5 @@
+# govScrapeR 0.0.5
+
 # govScrapeR 0.0.4
 * 2025-04-06: Code and documentation cleanup. Expanded on vignettes. 
 
